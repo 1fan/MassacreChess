@@ -49,44 +49,6 @@ def count4dMove(b, coordinate):
     return m
 
 
-text = """X - - - - - - X
-- - - - - - - -
-- - - - - O O -
-- - - - @ O - -
-- - - - - - - -
-- - - - - O - -
-- - - - @ - @ @
-X - - - - - - X
-Moves"""
-
-# read input
-r = 0
-board = []  # 2d list of the board
-black = []  # list of all black pieces
-white = []  # list of all white pieces
-for line in text.split("\n"):
-    if r == 8:
-        action = line
-    else:
-        newline = []
-        c = 0
-        for ch in line:
-
-            if ch == "O":
-                white.append((c, r))
-            elif ch == "@":
-                black.append((c, r))
-            if ch != " ":
-                newline.append(ch)
-                c += 1
-        board.append(newline)
-        r += 1
-
-# Move
-print(n_move_of_one_piece(board, white))
-print(n_move_of_one_piece(board, black))
-
-
 # for debug
 def checkstatus(b, c):
     x, y = c
@@ -95,4 +57,48 @@ def checkstatus(b, c):
     print(" empty", isEmpty(b, c))
     print(" occupied", isOccupied(b, c))
     print(" corner", isCorner(c))
+
+def isKillable():
+    # if column and row from [1,6]:
+    # if (colume==0||8）|| (row==0||8):
+    #     if close to corner:
+    #     else:
+    pass
+
+
+def readFile(path):
+    r = 0
+    with open(path, 'r') as f:
+        for line in f.readlines():
+            if r == 8:
+                action = line.strip()
+                if action=="Moves":
+                    print(n_move_of_one_piece(board, white))
+                    print(n_move_of_one_piece(board, black))
+                elif action=="Massacre":
+                    print("MASSACRE:To Be Finished")
+                else:
+                    print("Invalid Command")
+
+            else:
+                newline = []
+                c = 0
+                for ch in line.strip():
+                    if ch == "O":
+                        white.append((c, r))
+                    elif ch == "@":
+                        black.append((c, r))
+                    if ch != " ":
+                        newline.append(ch)
+                        c += 1
+                board.append(newline)
+                r += 1
+
+if __name__ == "__main__":
+    board = []  # 2d list of the board
+    black = []  # list of all black pieces
+    white = []  # list of all white pieces
+    readFile("files/move-sample-3.in")
+
+
 
