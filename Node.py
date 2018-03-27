@@ -1,7 +1,7 @@
 class Node(object):
     cost = 0
     huristicValue = 0
-    G = cost + huristicValue
+    # G = cost + huristicValue
     route = []
     black = []
     white = []
@@ -11,6 +11,7 @@ class Node(object):
         self.huristicValue = huristicValue
         self.white = white
         self.black = black
+        G = huristicValue + self.cost
 
     def __repr__(self):
         return repr((self.black, self.white, self.route, self.huristicValue))
