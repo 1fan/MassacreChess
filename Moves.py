@@ -60,8 +60,11 @@ def checkstatus(b, c):
 
 def isKillable():
     # if column and row from [1,6]:
+    #   if neighbour  is different:
+    #   elif neighbour is the same:
     # if (colume==0||8）|| (row==0||8):
     #     if close to corner:
+    #     if neighbour is the same: not killable.
     #     else:
     pass
 
@@ -98,7 +101,7 @@ if __name__ == "__main__":
     board = []  # 2d list of the board
     black = []  # list of all black pieces
     white = []  # list of all white pieces
-    readFile("files/move-sample-3.in")
+    readFile("files/move-sample-1.in")
 
 
 
