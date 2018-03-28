@@ -34,7 +34,7 @@ if __name__ == "__main__":
     board = []  # 2d list of the board
     black = []  # list of all black pieces
     white = []  # list of all white pieces
-    PriorityList = [] # using sorted(PriorityList, key=lambda Node: Node.G) to sort using the value G
+    PriorityList = [] # re-sort the list each time after adding a new node
     if(readFile("files/massacre-sample-1.in") == 1):
         node0 = Node(black, white, [],0)
         printMoves(node0)
@@ -45,7 +45,7 @@ if __name__ == "__main__":
         totalRoute = []
         node = node0
         while not isKilled(node):
-            node = sorted(PriorityList, key=lambda Node: Node.G)[0]     # pop out
+            node = PriorityList[0]     # pop out
             PriorityList.pop(0)
             B = node.black[0]
             for direction in [(0, -1), (0, +1), (-1, 0), (1, 0)]:
@@ -70,6 +70,7 @@ if __name__ == "__main__":
                             break
                         else:
                             PriorityList.append(newNode)
+                            PriorityList = sorted(PriorityList, key=lambda Node: Node.G)
         PriorityList = [].append(Target)
 
         print(Target.route)
