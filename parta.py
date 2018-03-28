@@ -1,9 +1,11 @@
 from Node import *
 from judge import *
 import queue
+
+
 def printMassacre(route):
     for oneMove in route:
-        print "%s  -> %s" % (oneMove[0], oneMove[1])
+        print("%s -> %s" % (oneMove[0], oneMove[1]))
 
 
 def readFile(path):
