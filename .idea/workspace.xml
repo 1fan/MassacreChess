@@ -15,7 +15,7 @@
     <splitter split-orientation="horizontal" split-proportion="0.31041667">
       <split-first>
         <leaf>
-          <file leaf-file-name="judge.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="judge.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/judge.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="2268">
@@ -25,10 +25,10 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="Node.py" pinned="false" current-in-tab="false">
+          <file leaf-file-name="Node.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/Node.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-47">
+                <state relative-caret-position="0">
                   <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
                   <folding />
                 </state>
@@ -42,10 +42,11 @@
           <file leaf-file-name="parta.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/parta.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-183">
-                  <caret line="54" column="14" lean-forward="true" selection-start-line="54" selection-start-column="14" selection-end-line="54" selection-end-column="14" />
+                <state relative-caret-position="1485">
+                  <caret line="81" column="12" lean-forward="true" selection-start-line="81" selection-start-column="12" selection-end-line="81" selection-end-column="12" />
                   <folding>
                     <element signature="e#0#18#0" expanded="true" />
+                    <element signature="e#183#985#0" expanded="false" />
                   </folding>
                 </state>
               </provider>
@@ -60,6 +61,8 @@
       <find>zip</find>
       <find>queue</find>
       <find>sort</find>
+      <find>total</find>
+      <find>printMove</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -192,21 +195,15 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager />
+    <breakpoint-manager>
+      <option name="time" value="1" />
+    </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/Moves.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Node.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-47">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
@@ -220,12 +217,21 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Node.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/parta.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-183">
-          <caret line="54" column="14" lean-forward="true" selection-start-line="54" selection-start-column="14" selection-end-line="54" selection-end-column="14" />
+        <state relative-caret-position="1485">
+          <caret line="81" column="12" lean-forward="true" selection-start-line="81" selection-start-column="12" selection-end-line="81" selection-end-column="12" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#183#985#0" expanded="false" />
           </folding>
         </state>
       </provider>

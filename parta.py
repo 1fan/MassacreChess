@@ -1,6 +1,10 @@
 from Node import *
 from judge import *
 import queue
+def printMassacre(route):
+    for oneMove in route:
+        print "%s  -> %s" % (oneMove[0], oneMove[1])
+
 
 def readFile(path):
     r = 0
@@ -41,8 +45,8 @@ if __name__ == "__main__":
     else:
         node0 = Node(black, white, [],0)    # initial state
         Target = Node([], [], [],0)         # the state when one black piece has been killed
-        PriorityList.append(node0)
         totalRoute = []                     # keep track off the overall route
+        PriorityList.append(node0)
         node = node0
         # try to kill each of the black pieces in turn
         for B in node0.black:
@@ -64,10 +68,11 @@ if __name__ == "__main__":
 
                             newNode = Node(black, newWhite, node.route.append(addedRoute), node.cost + 1)
                             if isKilled(newNode):
-                                totalRoute.append(newNode.route)
                                 newNode.black.remove(B)
                                 Target = newNode
+                                totalRoute.append(Target.route)
                                 isNotKilled = False
+                                printMassacre(Target.route)
                                 break
                             else:
                                 PriorityList.append(newNode)
@@ -75,12 +80,6 @@ if __name__ == "__main__":
                         if not isNotKilled:
                             break
             PriorityList = [].append(Target)
-
-
-
-
-
-        print(Target.route)
 
 
 
