@@ -9,7 +9,8 @@ def isEnemy(node, coordinate, direction):
     return False
 
 
-def isKilled(node, coordinate):
+def isKilled(node):
+    coordinate = node.black[0]
     left, right, up, down = (-1, 0), (+1, 0), (0, -1), (0, +1)
     return (isEnemy(node, coordinate, left) and isEnemy(node, coordinate, right)) \
         or (isEnemy(node, coordinate, up) and isEnemy(node, coordinate, down))
@@ -54,8 +55,9 @@ def isOccupied(node, coordinate):
 
 
 def neighborOf(coordinate, direction):
-    directions = [(0, -1), (0, +1), (-1, 0), (1, 0)]
-    return tuple(map(sum, zip(coordinate, directions[direction])))
+    # directions = [(0, -1), (0, +1), (-1, 0), (1, 0)]
+    return tuple(map(sum, zip(coordinate, direction)))
+
 
 def canMove(node, coordinate, direction):
     return isEmpty(node, neighborOf(coordinate, direction))
@@ -79,15 +81,40 @@ def count4dMove(node, coordinate):
         m += count1dMove(node, coordinate, d)
     return m
 
+
 # find the nearest white piece to the black piece whose location is coordinate.
 def findNearstWhite(node, coordinate):
     # return the position of the white piece.
     pass
 
+
+
+
+
 def getManhattanDistance(P1, P2):
     # return the Manhattan distance of these two position.
-    pass
+    x1, y1 = P1
+    x2, y2 = P2
+    return abs(x2 - x1) + abs(y2 - y1)
+
 
 # return possible directions from W to B.
-def getPossibleDirection(B,W):
-    pass
+def getPossibleMoves(node, start, end):
+    x1, y1 = start
+    x2, y2 = end
+    x, y = 0, 0
+    if x1 > x2:  # from is on the right of to
+        x = -1  # need to move left
+    elif x1 < x2:  # from is on the left of to
+        x = +1  # need to move right
+    if y1 > y2:  # from is below to
+        x = +1  # need to move up
+    elif x1 < x2:  # from is above to
+        x = -1  # need to move down
+    possibleMoves = []
+    if x:
+        if canMove(node, start, (x, 0)):
+            possibleMoves.append((x, 0))
+    if y and canMove(node, start, (0, y)):
+        possibleMoves.append((0, y))
+    return possibleMoves
