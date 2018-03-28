@@ -64,11 +64,12 @@ if __name__ == "__main__":
                     # generate new node for each move
                     if possibleNextMove:
                         for m in possibleNextMove:
-                            addedRoute = [WhitePosition, m]  # list of tuples
-                            newWhite = node.white.remove(WhitePosition)
+                            node.route.append([WhitePosition, m])
+                            newRoute = node.route
+                            newWhite = node.white
+                            newWhite.remove(WhitePosition)
                             newWhite.append(m)
-
-                            newNode = Node(black, newWhite, node.route.append(addedRoute), node.cost + 1)
+                            newNode = Node(black, newWhite, newRoute, node.cost + 1)
                             if isKilled(newNode):
                                 newNode.black.remove(B)
                                 Target = newNode
