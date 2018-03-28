@@ -39,39 +39,46 @@ if __name__ == "__main__":
         node0 = Node(black, white, [],0)
         printMoves(node0)
     else:
-        node0 = Node(black, white, [],0)
-        Target = Node([], [], [],0)
+        node0 = Node(black, white, [],0)    # initial state
+        Target = Node([], [], [],0)         # the state when one black piece has been killed
         PriorityList.append(node0)
-        totalRoute = []
+        totalRoute = []                     # keep track off the overall route
         node = node0
-        while not isKilled(node):
-            node = PriorityList[0]     # pop out
-            PriorityList.pop(0)
-            B = node.black[0]
-            for direction in [(0, -1), (0, +1), (-1, 0), (1, 0)]:
-                # find next moves
-                neighbor = neighborOf(B, direction)
-                WhitePosition = findNearstWhite(node, neighbor)
-                possibleNextMove = getPossibleMoves(node, WhitePosition, neighbor)
+        # try to kill each of the black pieces in turn
+        for B in node0.black:
+            isNotKilled = 1     # B
+            while isNotKilled:   # target black is not killed
+                node = PriorityList.pop(0)
+                for direction in [(0, -1), (0, +1), (-1, 0), (1, 0)]:
+                    # find next moves
+                    neighbor = neighborOf(B, direction)
+                    WhitePosition = findNearstWhite(node, neighbor)
+                    possibleNextMove = getPossibleMoves(node, WhitePosition, neighbor)
 
-                # generate new node for each move
-                if possibleNextMove:
-                    for m in possibleNextMove:
-                        addedRoute = [WhitePosition, m]  # list of tuples
-                        newWhite = node.white.remove(WhitePosition)
-                        newWhite.append(m)
+                    # generate new node for each move
+                    if possibleNextMove:
+                        for m in possibleNextMove:
+                            addedRoute = [WhitePosition, m]  # list of tuples
+                            newWhite = node.white.remove(WhitePosition)
+                            newWhite.append(m)
 
-                        newNode = Node(black, newWhite, node.route.append(addedRoute), node.cost + 1)
-                        PriorityList.append(newNode)
-                        if isKilled(newNode):
-                            totalRoute.append(newNode.route)
-                            Target = newNode
-                            newNode.black.remove(B)
+                            newNode = Node(black, newWhite, node.route.append(addedRoute), node.cost + 1)
+                            if isKilled(newNode):
+                                totalRoute.append(newNode.route)
+                                newNode.black.remove(B)
+                                Target = newNode
+                                isNotKilled = False
+                                break
+                            else:
+                                PriorityList.append(newNode)
+                                PriorityList = sorted(PriorityList, key=lambda Node: Node.G)
+                        if not isNotKilled:
                             break
-                        else:
-                            PriorityList.append(newNode)
-                            PriorityList = sorted(PriorityList, key=lambda Node: Node.G)
-        PriorityList = [].append(Target)
+            PriorityList = [].append(Target)
+
+
+
+
 
         print(Target.route)
 
