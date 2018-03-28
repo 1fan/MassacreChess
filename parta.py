@@ -52,24 +52,24 @@ if __name__ == "__main__":
                 # find next moves
                 neighbor = neighborOf(B, direction)
                 WhitePosition = findNearstWhite(node, neighbor)
-
                 possibleNextMove = getPossibleMoves(node, WhitePosition, neighbor)
 
                 # generate new node for each move
-                for m in possibleNextMove:
-                    addedRoute = [WhitePosition, m]
-                    newWhite = node.white.remove(WhitePosition)
-                    newWhite.append(m)
+                if possibleNextMove:
+                    for m in possibleNextMove:
+                        addedRoute = [WhitePosition, m]  # list of tuples
+                        newWhite = node.white.remove(WhitePosition)
+                        newWhite.append(m)
 
-                    newNode = Node(black,newWhite,node.route.append(addedRoute), node.cost+1)
-                    PriorityList.append(newNode)
-                    if isKilled(newNode):
-                        totalRoute.append(newNode.route)
-                        Target = newNode
-                        newNode.black.remove(B)
-                        break
-                    else:
+                        newNode = Node(black, newWhite, node.route.append(addedRoute), node.cost + 1)
                         PriorityList.append(newNode)
+                        if isKilled(newNode):
+                            totalRoute.append(newNode.route)
+                            Target = newNode
+                            newNode.black.remove(B)
+                            break
+                        else:
+                            PriorityList.append(newNode)
         PriorityList = [].append(Target)
 
         print(Target.route)

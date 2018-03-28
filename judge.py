@@ -56,17 +56,38 @@ def isOccupied(node, coordinate):
 
 def neighborOf(coordinate, direction):
     # directions = [(0, -1), (0, +1), (-1, 0), (1, 0)]
-    return tuple(map(sum, zip(coordinate, direction)))
+    return addTuples(coordinate, direction)
 
 
 def canMove(node, coordinate, direction):
     return isEmpty(node, neighborOf(coordinate, direction))
 
 
+# return the coordinate after the MOVE
+def move(coordinate, direction):
+    return addTuples(coordinate, direction)
+
+
 def canJump(node, coordinate, direction):
     neighbor = neighborOf(coordinate, direction)
     neighbor1 = neighborOf(neighbor, direction)
     return isOccupied(node, neighbor) and isEmpty(node, neighbor1)
+
+
+# return the coordinate after the JUMP
+def jump(coordinate, direction):
+    return addTuples(coordinate, multiplyTuples(direction, 2))
+
+
+def addTuples(t1, t2):
+    x1, y1 = t1
+    x2, y2 = t2
+    return x1 + x2, y1 + y2
+
+
+def multiplyTuples(t, factor):
+    x, y = t
+    return x * factor, y * factor
 
 
 # Check if one piece can move in one specific direction
@@ -83,12 +104,13 @@ def count4dMove(node, coordinate):
 
 
 # find the nearest white piece to the black piece whose location is coordinate.
-def findNearstWhite(node, coordinate):
+# ???? there can be multiple white pieces with the same min distance ????
+def findNearstWhite(node, c_to):
     # return the position of the white piece.
-    pass
-
-
-
+    candidates = []     # list of tuples (distance, white)
+    for w in node.white:
+        candidates.append((getManhattanDistance(w, c_to), w))
+    return sorted(candidates)[0][1]
 
 
 def getManhattanDistance(P1, P2):
@@ -98,23 +120,30 @@ def getManhattanDistance(P1, P2):
     return abs(x2 - x1) + abs(y2 - y1)
 
 
-# return possible directions from W to B.
+# return possible directions from W to B's neighbor.
 def getPossibleMoves(node, start, end):
     x1, y1 = start
     x2, y2 = end
     x, y = 0, 0
-    if x1 > x2:  # from is on the right of to
-        x = -1  # need to move left
-    elif x1 < x2:  # from is on the left of to
-        x = +1  # need to move right
-    if y1 > y2:  # from is below to
-        x = +1  # need to move up
-    elif x1 < x2:  # from is above to
-        x = -1  # need to move down
+    if x1 > x2:     # start is on the right of end
+        x = -1      # need to move left
+    elif x1 < x2:   # start is on the left of end
+        x = +1      # need to move right
+    if y1 > y2:     # start is below end
+        y = +1      # need to move up
+    elif x1 < x2:   # start is above end
+        y = -1  # need to move down
     possibleMoves = []
     if x:
         if canMove(node, start, (x, 0)):
-            possibleMoves.append((x, 0))
-    if y and canMove(node, start, (0, y)):
-        possibleMoves.append((0, y))
+            possibleMoves.append(move(start, (x, 0)))
+        elif canJump(node, start, (x, 0)):
+            possibleMoves.append(jump(start, (x, 0)))
+    if y:
+        if canMove(node, start, (0, y)):
+            possibleMoves.append(move(start, (0, y)))
+        elif canJump(node, start, (0, y)):
+            possibleMoves.append(jump(start, (0, y)))
     return possibleMoves
+
+
