@@ -1,4 +1,5 @@
 from judge import *
+import math
 class Node(object):
     cost = 0
     huristicValue = 0
@@ -28,6 +29,9 @@ class Node(object):
             for oneD in twoD:
                 c_to = neighborOf(aim, oneD)
                 c_from = findNearstWhite(self, c_to)
-                h += getManhattanDistance(c_from, c_to)
+                if isBlack(self, c_to):
+                    h += math.inf
+                else:
+                    h += getManhattanDistance(c_from, c_to)
             H.append(h)
         return min(H)
