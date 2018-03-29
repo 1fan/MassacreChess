@@ -37,7 +37,7 @@ if __name__ == "__main__":
     PriorityList = [] # using sorted(PriorityList, key=lambda Node: Node.G) to sort using the value G
     if(readFile("files/massacre-sample-1.in") == 1):
         node0 = Node(black, white, [], 0)
-        printMoves(node0)
+        print_moves(node0)
     else:
         node0 = Node(black, white, [], 0)
         Target = Node([], [], [], 0)
@@ -49,8 +49,8 @@ if __name__ == "__main__":
                 node = sorted(PriorityList, key=lambda Node: Node.G)[0]
                 PriorityList.remove()
                 for direction in [(0, -1), (0, +1), (-1, 0), (1, 0)]:
-                    WhitePosition = findNearstWhite(node, B)
-                    huristicValue = getManhattanDistance(B, WhitePosition)
+                    WhitePosition = find_nearst_white(node, B)
+                    huristicValue = get_manhattan_distance(B, WhitePosition)
                     possibleDirection = getPossibleDirection(B, WhitePosition)
                     for d in possibleDirection:
                         route = [WhitePosition, tuple(map(sum, zip(WhitePosition, d)))]

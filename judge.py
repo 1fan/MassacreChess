@@ -1,119 +1,108 @@
 def is_enemy(node, coordinate, direction):
-    neighbor = neighborOf(coordinate, direction)
-    if isCorner(neighbor):
+    neighbor = neighbor_of(coordinate, direction)
+    if is_corner(neighbor):
         return True
-    if isBlack(node, neighbor):
-        return isWhite(node, coordinate)
-    if isWhite(node, neighbor):
-        return isBlack(node, coordinate)
+    if is_black(node, neighbor):
+        return is_white(node, coordinate)
+    if is_white(node, neighbor):
+        return is_black(node, coordinate)
     return False
 
 
-def is_killed(node, Black):
-    coordinate = Black
+def is_killed(node, coordinate):
     left, right, up, down = (-1, 0), (+1, 0), (0, -1), (0, +1)
     return (is_enemy(node, coordinate, left) and is_enemy(node, coordinate, right)) \
         or (is_enemy(node, coordinate, up) and is_enemy(node, coordinate, down))
 
 
-def printMoves(node):
+def print_moves(node):
     m = 0
     for p in node.white:
-        m += count4dMove(node, p)
+        m += count_4d_move(node, p)
     print(m)
     m = 0
     for p in node.white:
-        m += count4dMove(node, p)
+        m += count_4d_move(node, p)
     print(m)
 
 
-def isCorner(coordinate):
+def is_corner(coordinate):
     corners = [(0, 0), (0, 7), (7, 0), (7, 7)]
     return coordinate in corners
 
 
-def isOutside(coordinate):
+def is_outside(coordinate):
     c, r = coordinate
     return c <= -1 or c >= 8 or r <= -1 or r >= 8
 
 
-def isBlack(node, coordinate):
+def is_black(node, coordinate):
     return coordinate in node.black
 
 
-def isWhite(node, coordinate):
+def is_white(node, coordinate):
     return coordinate in node.white
 
 
 # "-" in board
-def isEmpty(node, coordinate):
-    return not (isOutside(coordinate) or isCorner(coordinate) or isBlack(node, coordinate) or isWhite(node, coordinate))
+def is_empty(node, coordinate):
+    return not (is_outside(coordinate) or is_corner(coordinate)
+                or is_black(node, coordinate) or is_white(node, coordinate))
 
 
-def isOccupied(node, coordinate):
-    return isBlack(node, coordinate) or isWhite(node, coordinate)
+def is_occupied(node, coordinate):
+    return is_black(node, coordinate) or is_white(node, coordinate)
 
 
-def neighborOf(coordinate, direction):
-    # directions = [(0, -1), (0, +1), (-1, 0), (1, 0)]
-    return addTuples(coordinate, direction)
+def neighbor_of(coordinate, direction):
+    return add_tuples(coordinate, direction)
 
 
-def canMove(node, coordinate, direction):
-    return isEmpty(node, neighborOf(coordinate, direction))
+def can_move(node, coordinate, direction):
+    return is_empty(node, neighbor_of(coordinate, direction))
 
 
 # return the coordinate after the MOVE
 def move(coordinate, direction):
-    return addTuples(coordinate, direction)
+    return add_tuples(coordinate, direction)
 
 
-def canJump(node, coordinate, direction):
-    neighbor = neighborOf(coordinate, direction)
-    neighbor1 = neighborOf(neighbor, direction)
-    return isOccupied(node, neighbor) and isEmpty(node, neighbor1)
+def can_jump(node, coordinate, direction):
+    neighbor = neighbor_of(coordinate, direction)
+    neighbor1 = neighbor_of(neighbor, direction)
+    return is_occupied(node, neighbor) and is_empty(node, neighbor1)
 
 
 # return the coordinate after the JUMP
 def jump(coordinate, direction):
-    return addTuples(coordinate, multiplyTuples(direction, 2))
+    return add_tuples(coordinate, multiply_tuples(direction, 2))
 
 
-def addTuples(t1, t2):
+def add_tuples(t1, t2):
     x1, y1 = t1
     x2, y2 = t2
     return x1 + x2, y1 + y2
 
 
-def multiplyTuples(t, factor):
+def multiply_tuples(t, factor):
     x, y = t
     return x * factor, y * factor
 
 
 # Check if one piece can move in one specific direction
-def count1dMove(node, coordinate, direction):
-    return canMove(node, coordinate, direction) + canJump(node, coordinate, direction)
+def count_1d_move(node, coordinate, direction):
+    return can_move(node, coordinate, direction) + can_jump(node, coordinate, direction)
 
 
 # Count number of moves that one piece can make
-def count4dMove(node, coordinate):
+def count_4d_move(node, coordinate):
     m = 0
     for d in range(4):
-        m += count1dMove(node, coordinate, d)
+        m += count_1d_move(node, coordinate, d)
     return m
 
 
-# find the nearest white piece to the black piece whose location is coordinate.
-# ???? there can be multiple white pieces with the same min distance ????
-def findNearstWhite(node, c_to):
-    # return the position of the white piece.
-    candidates = []     # list of tuples (distance, white)
-    for w in node.white:
-        candidates.append((getManhattanDistance(w, c_to), w))
-    return sorted(candidates)[0][1]
-
-
-def getManhattanDistance(P1, P2):
+def get_manhattan_distance(P1, P2):
     # return the Manhattan distance of these two position.
     x1, y1 = P1
     x2, y2 = P2
@@ -121,13 +110,13 @@ def getManhattanDistance(P1, P2):
 
 
 # return possible directions from W to B's neighbor.
-def getPossibleMoves(node, start):
-    possibleMoves = []
+def get_coordinates_after_possible_moves(node, start):
+    coordinates_after_possible_moves = []
     for d in [(0, -1), (0, +1), (-1, 0), (1, 0)]:
-        if canMove(node, start, d):
-            possibleMoves.append(move(start, d))
-        elif canJump(node, start, d):
-            possibleMoves.append(jump(start, d))
-    return possibleMoves
+        if can_move(node, start, d):
+            coordinates_after_possible_moves.append(move(start, d))
+        elif can_jump(node, start, d):
+            coordinates_after_possible_moves.append(jump(start, d))
+    return coordinates_after_possible_moves
 
 

@@ -1,13 +1,14 @@
 from Node import *
 from judge import *
 
-def printMassacre(route):
+
+def print_massacre(route):
     for oneMove in route:
         print("%s -> %s" % (oneMove[0], oneMove[1]))
 
 
-def is_empty(l):
-    if not l:
+def is_empty(my_list):
+    if not my_list:
         return True
     return False
 
@@ -22,7 +23,7 @@ def create_new_node(current, w_i, w_f):
     return new
 
 
-def readFile(path):
+def read_file(path):
     r = 0
     with open(path, 'r') as f:
         for line in f.readlines():
@@ -51,12 +52,12 @@ def readFile(path):
 if __name__ == "__main__":
     black = []  # list of all black pieces
     white = []  # list of all white pieces
-    if readFile("files/massacre-sample-3.in") == 1:
+    if read_file("files/massacre-sample-3.in") == 1:
         node0 = Node(black, white, [], 0)
-        printMoves(node0)
+        print_moves(node0)
     else:
         PQ = []  # A priority queue of nodes sorting by G (cost + heuristic)
-        #black.reverse()
+        # black.reverse()
         node0 = Node(black, white, [], 0)    # initial state
         PQ.append(node0)
 
@@ -67,7 +68,7 @@ if __name__ == "__main__":
             target_b_is_killed = False
 
             for W0 in current_node.white:
-                w_list = getPossibleMoves(current_node, W0)
+                w_list = get_coordinates_after_possible_moves(current_node, W0)
                 if w_list:
                     for W in w_list:
                         new_node = create_new_node(current_node, W0, W)
@@ -85,7 +86,7 @@ if __name__ == "__main__":
                         if is_killed(new_node, target_b):
                             # print("Targeted %s killed" % (B,))
                             target_b_is_killed = True
-                            printMassacre(new_node.route)
+                            print_massacre(new_node.route)
 
                             # Update newNode by deleting the killed black piece
                             new_node.black.remove(target_b)

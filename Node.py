@@ -24,5 +24,5 @@ class Node(object):
         h = 0
         b = self.black[0]  # the black piece to be eliminated
         for W in self.white:
-            h += getManhattanDistance(b, W)
+            h += get_manhattan_distance(b, W)
         return h
