@@ -47,7 +47,6 @@ if __name__ == "__main__":
     else:
         black.reverse()
         node0 = Node(black, white, [],0)    # initial state
-        Target = Node([], [], [],0)         # the state when one black piece has been killed
         totalRoute = []                     # keep track off the overall route
         PriorityList.append(node0)
         node = node0
@@ -84,11 +83,10 @@ if __name__ == "__main__":
                         if isKilled(newNode, B):
                             print("Targeted %s killed" % (Black,))
                             newNode.black.remove(Black)
-                            Target = newNode
-                            PriorityList = [].append(Target)
-                            totalRoute.append(Target.route)
+                            PriorityList = [].append(newNode)
+                            #totalRoute.append(Target.route)
                             isNotKilled = False
-                            # printMassacre(Target.route)
+                            printMassacre(newNode.route)
                             break
 
                         if isNotKilled:
@@ -98,8 +96,8 @@ if __name__ == "__main__":
                     if not isNotKilled:
                         break
 
-        for r in totalRoute:
-            printMassacre(r)
+        #for r in totalRoute:
+        #  printMassacre(r)
 
 
 
