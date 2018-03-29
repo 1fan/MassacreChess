@@ -1,4 +1,4 @@
-from judgeFINAL import *
+from judge import *
 
 
 class Node(object):

@@ -1,5 +1,5 @@
-from NodeFINAL import *
-from judgeFINAL import *
+from Node import *
+from judge import *
 
 def printMassacre(route):
     for oneMove in route:
