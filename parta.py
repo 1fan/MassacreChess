@@ -45,45 +45,59 @@ if __name__ == "__main__":
         node0 = Node(black, white, [],0)
         printMoves(node0)
     else:
+        # black.reverse()
         node0 = Node(black, white, [],0)    # initial state
         Target = Node([], [], [],0)         # the state when one black piece has been killed
         totalRoute = []                     # keep track off the overall route
         PriorityList.append(node0)
         node = node0
         # try to kill each of the black pieces in turn
-        for B in node0.black:
-            isNotKilled = 1     # B
-            while isNotKilled:   # target black is not killed
-                node = PriorityList.pop(0)
-                for direction in [(0, -1), (0, +1), (-1, 0), (1, 0)]:
-                    # find next moves
-                    neighbor = neighborOf(B, direction)
-                    WhitePosition = findNearstWhite(node, neighbor)
-                    possibleNextMove = getPossibleMoves(node, WhitePosition, neighbor)
+        # for B in node0.black:
 
-                    # generate new node for each move
-                    if possibleNextMove:
-                        for m in possibleNextMove:
-                            node.route.append([WhitePosition, m])
-                            newRoute = list(node.route)
-                            newWhite = list(node.white)
-                            newWhite.remove(WhitePosition)
-                            newWhite.append(m)
-                            newNode = Node(black, newWhite, newRoute, node.cost + 1)
-                            if isKilled(newNode):
-                                newNode.black.remove(B)
-                                Target = newNode
-                                totalRoute.append(Target.route)
-                                isNotKilled = False
-                                printMassacre(Target.route)
-                                break
-                            else:
-                                PriorityList.append(newNode)
-                                PriorityList = sorted(PriorityList, key=lambda Node: Node.G)
-                        if not isNotKilled:
+        isNotKilled = True  # B
+        while isNotKilled:  # target black is not killed
+            B = node.black[0]
+            node = PriorityList.pop(0)
+            for direction in [(0, -1), (0, +1), (-1, 0), (1, 0)]:
+                # find next moves
+                neighbor = neighborOf(B, direction)
+                WhitePosition = findNearstWhite(node, neighbor)
+                possibleNextMove = getPossibleMoves(node, WhitePosition, neighbor)
+
+                # generate new node for each move
+                if possibleNextMove:
+                    for m in possibleNextMove:
+                        # node.route.append([WhitePosition, m])
+                        newRoute = list(node.route)
+                        newRoute.append([WhitePosition, m])
+                        newWhite = list(node.white)
+                        newWhite.remove(WhitePosition)
+                        newWhite.append(m)
+                        newNode = Node(node.black, newWhite, newRoute, node.cost + 1)
+                        # killableMove = 0 #whether this move could kill one or more black
+                        for Black in newNode.black:
+                            if Black != B and isKilled(newNode, Black):
+                                print(Black)
+                                newNode.black.remove(Black)
+                        if isKilled(newNode, B):
+                            print(Black)
+                            newNode.black.remove(Black)
+                            Target = newNode
+                            PriorityList = [].append(Target)
+                            totalRoute.append(Target.route)
+                            isNotKilled = False
+                            # printMassacre(Target.route)
                             break
-            PriorityList = [].append(Target)
 
+                        if isNotKilled:
+                            PriorityList.append(newNode)
+                            PriorityList = sorted(PriorityList, key=lambda Node: Node.G)
+
+                    if not isNotKilled:
+                        break
+
+        for r in totalRoute:
+            printMassacre(r)
 
 
 

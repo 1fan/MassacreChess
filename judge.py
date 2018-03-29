@@ -9,8 +9,8 @@ def isEnemy(node, coordinate, direction):
     return False
 
 
-def isKilled(node):
-    coordinate = node.black[0]
+def isKilled(node, Black):
+    coordinate = Black
     left, right, up, down = (-1, 0), (+1, 0), (0, -1), (0, +1)
     return (isEnemy(node, coordinate, left) and isEnemy(node, coordinate, right)) \
         or (isEnemy(node, coordinate, up) and isEnemy(node, coordinate, down))
