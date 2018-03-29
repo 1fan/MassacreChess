@@ -55,7 +55,7 @@ if __name__ == "__main__":
         isAllKilled = False
         while not isAllKilled:  # target black is not killed
             isNotKilled = True  # B
-            node = PriorityList.pop(0)
+            #node = PriorityList.pop(0)
             B = node.black[0]
             for W0 in node.white:
                 W_list = getPossibleMoves(node, W0)
@@ -68,10 +68,15 @@ if __name__ == "__main__":
                         newWhite.append(W)
                         newNode = Node(node.black, newWhite, newRoute, node.cost + 1)
 
+                        killByAccident = False
                         for Black in newNode.black:
                             if Black != B and isKilled(newNode, Black):
                                 # print("Accidently killed %s" % (Black,))
-                                newNode.black.remove(Black)
+                                killByAccident = True
+                                break
+                        if killByAccident:
+                            break
+
 
                         if isKilled(newNode, B):
                             # print("Targeted %s killed" % (B,))
@@ -85,15 +90,14 @@ if __name__ == "__main__":
                             # Update PriorityList
                             del PriorityList[:]
                             PriorityList.append(newNode)
-
-                            # Check is all killed
-                            if not newNode.black:
-                                isAllKilled = True
                             break
                         else:
                             PriorityList.append(newNode)
                             PriorityList = sorted(PriorityList, key=lambda Node: Node.G)
                     if not isNotKilled:
                         break
-
+            # Check is all killed
+            node = PriorityList.pop(0)
+            if not node.black:
+                isAllKilled = True
 
