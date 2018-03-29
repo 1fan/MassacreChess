@@ -41,7 +41,7 @@ if __name__ == "__main__":
     black = []  # list of all black pieces
     white = []  # list of all white pieces
     PriorityList = [] # re-sort the list each time after adding a new node
-    if(readFile("files/massacre-sample-1.in") == 1):
+    if(readFile("files/massacre-sample-2.in") == 1):
         node0 = Node(black, white, [],0)
         printMoves(node0)
     else:
@@ -65,8 +65,8 @@ if __name__ == "__main__":
                     if possibleNextMove:
                         for m in possibleNextMove:
                             node.route.append([WhitePosition, m])
-                            newRoute = node.route
-                            newWhite = node.white
+                            newRoute = list(node.route)
+                            newWhite = list(node.white)
                             newWhite.remove(WhitePosition)
                             newWhite.append(m)
                             newNode = Node(black, newWhite, newRoute, node.cost + 1)
