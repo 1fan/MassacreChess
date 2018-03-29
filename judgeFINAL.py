@@ -1,4 +1,4 @@
-def isEnemy(node, coordinate, direction):
+def is_enemy(node, coordinate, direction):
     neighbor = neighborOf(coordinate, direction)
     if isCorner(neighbor):
         return True
@@ -9,11 +9,11 @@ def isEnemy(node, coordinate, direction):
     return False
 
 
-def isKilled(node, Black):
+def is_killed(node, Black):
     coordinate = Black
     left, right, up, down = (-1, 0), (+1, 0), (0, -1), (0, +1)
-    return (isEnemy(node, coordinate, left) and isEnemy(node, coordinate, right)) \
-        or (isEnemy(node, coordinate, up) and isEnemy(node, coordinate, down))
+    return (is_enemy(node, coordinate, left) and is_enemy(node, coordinate, right)) \
+        or (is_enemy(node, coordinate, up) and is_enemy(node, coordinate, down))
 
 
 def printMoves(node):

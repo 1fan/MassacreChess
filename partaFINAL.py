@@ -51,7 +51,7 @@ def readFile(path):
 if __name__ == "__main__":
     black = []  # list of all black pieces
     white = []  # list of all white pieces
-    if(readFile("files/massacre-sample-3.in") == 1):
+    if readFile("files/massacre-sample-3.in") == 1:
         node0 = Node(black, white, [], 0)
         printMoves(node0)
     else:
@@ -59,9 +59,6 @@ if __name__ == "__main__":
         #black.reverse()
         node0 = Node(black, white, [], 0)    # initial state
         PQ.append(node0)
-
-        # try to kill each of the black pieces in turn
-        # for B in node0.black:
 
         all_b_are_killed = False
         current_node = node0
@@ -78,14 +75,14 @@ if __name__ == "__main__":
                         # Check if there are black pieces other than the target piece that could be kill by this move
                         kill_by_accident = False
                         for b in new_node.black:
-                            if b != target_b and isKilled(new_node, b):
+                            if b != target_b and is_killed(new_node, b):
                                 # print("Accidentally killed %s" % (Black,))
                                 kill_by_accident = True
                                 break
                         if kill_by_accident:
                             break   # forget about this move and try next move in W_list
 
-                        if isKilled(new_node, target_b):
+                        if is_killed(new_node, target_b):
                             # print("Targeted %s killed" % (B,))
                             target_b_is_killed = True
                             printMassacre(new_node.route)

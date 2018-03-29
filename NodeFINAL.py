@@ -1,11 +1,10 @@
-from judge import *
-import math
+from judgeFINAL import *
 
 
 class Node(object):
     cost = 0
-    huristicValue = 0
-    G = cost + huristicValue
+    heuristic = 0
+    G = cost + heuristic
     route = []
     black = []
     white = []
@@ -15,11 +14,11 @@ class Node(object):
         self.white = white
         self.black = black
         self.cost = cost
-        self.huristicValue = self.getH()
-        self.G = self.huristicValue + self.cost
+        self.heuristic = self.getH()
+        self.G = self.heuristic + self.cost
 
     def __repr__(self):
-        return repr((self.black, self.white, self.route, self.huristicValue))
+        return repr((self.black, self.white, self.route, self.heuristic))
 
     def getH(self):
         h = 0
