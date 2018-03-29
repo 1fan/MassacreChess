@@ -1,0 +1,49 @@
+0. Background information
+    (a) The board information is stored in two lists of tuples where the tuples are the coordinates of either white or black pieces.
+
+    (b) Problem Definition
+        initial state: read from input
+        actions: move or jump
+        goal test: whether all black pieces are eliminated
+        path cost: plus one after each move
+
+1. Calculating the number of available moves
+    (0) How to calculate
+        -> Iterate through the two lists to get the coordinate of pieces
+        -> Check 4 directions of the piece
+        -> See if the piece can move/jump in this direction (in constant time)
+
+    (1) Time Complexity
+        w = number of white pieces on board
+        b = number of black pieces on board
+        Time complexity = 4 * w * O(1) + 4 * b * O(1) = O(max(b, w))
+
+    (2) Space Complexity
+
+2.  Calculating the sequence of moves to eliminate all enemy pieces
+    (1) Formulate Search Problem
+        States: Configurations of the board
+        Actions: move one of the movable white pieces (<= 4 possible)
+        Performance measure: minimise total number of moves
+        Note: The goal is to eliminate each black pieces one by one in the order of the black pieces list.
+
+    (2) Problem simplification
+        The goal is to eliminate each black pieces one by one in the order of the black pieces list. Therefore the problem is simplify to a sequence of small task which is eliminating a specific black piece which will be referred as target black piece below.
+
+    (3) Search Algorithm
+        A*
+        cost = actual number of moves from initial node to current node
+        heuristic = sum of manhattan distance from the target black piece to all white pieces on board
+        As mention above, the problem has been simplified as eliminating one black piece at once. Therefore the heuristic function is only related to the target black piece, and the priority queue will be sorted in order of the estimate cost from initial to eliminating target black piece. Once the target piece is found, the priority queue will be cleared and only left the node which eliminated the target black piece. This keeps the size of the priority queue minimum. To keep track of the route, the route from initial state to current state is recorded and updated in each node.
+
+    (4) Optimality
+        Since the order of target black pieces is fixed, simply same order as being read in, and this implementation with its heuristic doesn't allow making moves which kills the non-targeted pieces, the optimal solution (least moves made) can NOT be guaranteed  to be found.
+        In other terms, the heuristic function is not admissible due to the nature of this implementation. The heuristic value is not garanteed to be less than real optimal cost for all states. It's more likely to be mostly larger in this case.
+
+    (5) Branching factor
+        When expending the node, all white pieces would make all movable moves.
+        Assume the number of white pieces is n, each white piece can make 4 moves(jump/move) at most,
+        Therefore the branching factor is 4n at most.
+
+
+
