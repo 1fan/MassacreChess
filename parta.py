@@ -106,7 +106,7 @@ if __name__ == "__main__":
 
                     if not isNotKilled:
                         break
-
+            #print(len(PriorityList))
 
         #for r in totalRoute:
         #  printMassacre(r)
