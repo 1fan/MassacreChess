@@ -6,6 +6,22 @@ def printMassacre(route):
         print("%s -> %s" % (oneMove[0], oneMove[1]))
 
 
+def is_empty(l):
+    if not l:
+        return True
+    return False
+
+
+def create_new_node(current, w_i, w_f):
+    new_route = list(current.route)
+    new_route.append([w_i, w_f])
+    new_white = list(current.white)
+    new_white.remove(w_i)
+    new_white.append(w_f)
+    new = Node(current.black, new_white, new_route, current.cost + 1)
+    return new
+
+
 def readFile(path):
     r = 0
     with open(path, 'r') as f:
@@ -21,7 +37,6 @@ def readFile(path):
                     exit(-1)
 
             else:
-                newline = []
                 c = 0
                 for ch in line.strip():
                     if ch == "O":
@@ -29,75 +44,66 @@ def readFile(path):
                     elif ch == "@":
                         black.append((c, r))
                     if ch != " ":
-                        newline.append(ch)
                         c += 1
-                board.append(newline)
                 r += 1
 
 
 if __name__ == "__main__":
-    board = []  # 2d list of the board
     black = []  # list of all black pieces
     white = []  # list of all white pieces
-    PriorityList = [] # re-sort the list each time after adding a new node
     if(readFile("files/massacre-sample-3.in") == 1):
-        node0 = Node(black, white, [],0)
+        node0 = Node(black, white, [], 0)
         printMoves(node0)
     else:
+        PQ = []  # A priority queue of nodes sorting by G (cost + heuristic)
         #black.reverse()
         node0 = Node(black, white, [], 0)    # initial state
-        # totalRoute = []                      keep track off the overall route
-        PriorityList.append(node0)
-        node = node0
+        PQ.append(node0)
+
         # try to kill each of the black pieces in turn
         # for B in node0.black:
 
-        isAllKilled = False
-        while not isAllKilled:  # target black is not killed
-            isNotKilled = True  # B
-            #node = PriorityList.pop(0)
-            B = node.black[0]
-            for W0 in node.white:
-                W_list = getPossibleMoves(node, W0)
-                if W_list:
-                    for W in W_list:
-                        newRoute = list(node.route)
-                        newRoute.append([W0, W])
-                        newWhite = list(node.white)
-                        newWhite.remove(W0)
-                        newWhite.append(W)
-                        newNode = Node(node.black, newWhite, newRoute, node.cost + 1)
+        all_b_are_killed = False
+        current_node = node0
+        while not all_b_are_killed:
+            target_b = current_node.black[0]
+            target_b_is_killed = False
 
-                        killByAccident = False
-                        for Black in newNode.black:
-                            if Black != B and isKilled(newNode, Black):
-                                # print("Accidently killed %s" % (Black,))
-                                killByAccident = True
+            for W0 in current_node.white:
+                w_list = getPossibleMoves(current_node, W0)
+                if w_list:
+                    for W in w_list:
+                        new_node = create_new_node(current_node, W0, W)
+
+                        # Check if there are black pieces other than the target piece that could be kill by this move
+                        kill_by_accident = False
+                        for b in new_node.black:
+                            if b != target_b and isKilled(new_node, b):
+                                # print("Accidentally killed %s" % (Black,))
+                                kill_by_accident = True
                                 break
-                        if killByAccident:
-                            break
+                        if kill_by_accident:
+                            break   # forget about this move and try next move in W_list
 
-
-                        if isKilled(newNode, B):
+                        if isKilled(new_node, target_b):
                             # print("Targeted %s killed" % (B,))
-                            isNotKilled = False
-                            printMassacre(newNode.route)
+                            target_b_is_killed = True
+                            printMassacre(new_node.route)
 
-                            # Update newNode
-                            newNode.black.remove(B)
-                            newNode.route.clear()
+                            # Update newNode by deleting the killed black piece
+                            new_node.black.remove(target_b)
+                            new_node.route.clear()
 
-                            # Update PriorityList
-                            del PriorityList[:]
-                            PriorityList.append(newNode)
+                            # Update PQ by replacing it with new_node as the only item
+                            del PQ[:]
+                            PQ.append(new_node)
                             break
                         else:
-                            PriorityList.append(newNode)
-                            PriorityList = sorted(PriorityList, key=lambda Node: Node.G)
-                    if not isNotKilled:
+                            PQ.append(new_node)
+                            PQ = sorted(PQ, key=lambda Node: Node.G)
+                    if target_b_is_killed:
                         break
             # Check is all killed
-            node = PriorityList.pop(0)
-            if not node.black:
-                isAllKilled = True
+            current_node = PQ.pop(0)
+            all_b_are_killed = is_empty(current_node.black)
 
