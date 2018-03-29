@@ -45,7 +45,7 @@ if __name__ == "__main__":
         node0 = Node(black, white, [],0)
         printMoves(node0)
     else:
-        # black.reverse()
+        black.reverse()
         node0 = Node(black, white, [],0)    # initial state
         Target = Node([], [], [],0)         # the state when one black piece has been killed
         totalRoute = []                     # keep track off the overall route
@@ -58,6 +58,7 @@ if __name__ == "__main__":
         while isNotKilled:  # target black is not killed
             B = node.black[0]
             node = PriorityList.pop(0)
+            #print(node.G)
             for direction in [(0, -1), (0, +1), (-1, 0), (1, 0)]:
                 # find next moves
                 neighbor = neighborOf(B, direction)
@@ -74,13 +75,14 @@ if __name__ == "__main__":
                         newWhite.remove(WhitePosition)
                         newWhite.append(m)
                         newNode = Node(node.black, newWhite, newRoute, node.cost + 1)
+                        # print(newNode.G)
                         # killableMove = 0 #whether this move could kill one or more black
                         for Black in newNode.black:
                             if Black != B and isKilled(newNode, Black):
-                                print(Black)
+                                print("Accidently killed %s" % (Black,))
                                 newNode.black.remove(Black)
                         if isKilled(newNode, B):
-                            print(Black)
+                            print("Targeted %s killed" % (Black,))
                             newNode.black.remove(Black)
                             Target = newNode
                             PriorityList = [].append(Target)
