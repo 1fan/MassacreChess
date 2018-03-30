@@ -1,6 +1,7 @@
 from judge import *
 
-# Node class defines the coorcinates of white side and the black side using the list black and white.
+# Node class defines the coordinates of white side and the black side using the list black and white.
+
 
 class Node(object):
     cost = 0
@@ -15,15 +16,15 @@ class Node(object):
         self.white = white
         self.black = black
         self.cost = cost
-        self.heuristic = self.getH()
+        self.heuristic = self.get_h()
         self.f = self.heuristic + self.cost
 
     def __repr__(self):
         return repr((self.black, self.white, self.route, self.heuristic))
 
-    # The huristic method to calculate the huristiv value which equals
+    # The heuristic method to calculate the heuristic value which equals
     # the total manhattan distance between all white pieces to the target black piece.
-    def getH(self):
+    def get_h(self):
         h = 0
         b = self.black[0]  # the black piece to be eliminated
         for W in self.white:

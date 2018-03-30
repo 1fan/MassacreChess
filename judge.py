@@ -8,13 +8,15 @@ def is_enemy(node, coordinate, direction):
         return is_black(node, coordinate)
     return False
 
+
 # return whether the coordinate could be killed
 def is_killed(node, coordinate):
     left, right, up, down = (-1, 0), (+1, 0), (0, -1), (0, +1)
     return (is_enemy(node, coordinate, left) and is_enemy(node, coordinate, right)) \
         or (is_enemy(node, coordinate, up) and is_enemy(node, coordinate, down))
 
-# print the moves of white side and black side separately,
+
+# print the moves of white side and black side separately
 def print_moves(node):
     m = 0
     for p in node.white:
@@ -49,13 +51,16 @@ def is_empty(node, coordinate):
     return not (is_outside(coordinate) or is_corner(coordinate)
                 or is_black(node, coordinate) or is_white(node, coordinate))
 
+
 # return whether the coordinate is occupied by a piece
 def is_occupied(node, coordinate):
     return is_black(node, coordinate) or is_white(node, coordinate)
 
 
+# return the coordinate of the neighbor in th specific direction
 def neighbor_of(coordinate, direction):
     return add_tuples(coordinate, direction)
+
 
 # return whether the coordinate could move in one direction
 def can_move(node, coordinate, direction):
@@ -65,6 +70,7 @@ def can_move(node, coordinate, direction):
 # return the coordinate after the MOVE
 def move(coordinate, direction):
     return add_tuples(coordinate, direction)
+
 
 # return whether the coordinate could jump in the specific direction
 def can_jump(node, coordinate, direction):
@@ -102,10 +108,11 @@ def count_4d_move(node, coordinate):
         m += count_1d_move(node, coordinate, directions[d])
     return m
 
+
 # return the Manhattan distance of these two position.
-def get_manhattan_distance(P1, P2):
-    x1, y1 = P1
-    x2, y2 = P2
+def get_manhattan_distance(p1, p2):
+    x1, y1 = p1
+    x2, y2 = p2
     return abs(x2 - x1) + abs(y2 - y1)
 
 
@@ -118,6 +125,7 @@ def get_coordinates_after_possible_moves(node, start):
         elif can_jump(node, start, d):
             coordinates_after_possible_moves.append(jump(start, d))
     return coordinates_after_possible_moves
+
 
 def print_massacre(route):
     for oneMove in route:
