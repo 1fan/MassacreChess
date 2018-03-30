@@ -22,37 +22,31 @@ def create_new_node(current, w_i, w_f):
     new = Node(current.black, new_white, new_route, current.cost + 1)
     return new
 
-
-def read_file(path):
-    r = 0
-    with open(path, 'r') as f:
-        for line in f.readlines():
-            if r == 8:
-                action = line.strip()
-                if action=="Moves":
-                    return 1
-                elif action=="Massacre":
-                    return 2
-                else:
-                    print("Invalid Command")
-                    exit(-1)
-
+def readInput():
+    for i in range(9):
+        if i == 8:
+            action = input().strip()
+            if action == "Moves":
+                return 1
+            elif action == "Massacre":
+                return 2
             else:
-                c = 0
-                for ch in line.strip():
-                    if ch == "O":
-                        white.append((c, r))
-                    elif ch == "@":
-                        black.append((c, r))
-                    if ch != " ":
-                        c += 1
-                r += 1
-
+                print("Invalid Command")
+                exit(-1)
+        else:
+            c = 0
+            for ch in input().strip():
+                if ch == "O":
+                    white.append((c, i))
+                elif ch == "@":
+                    black.append((c, i))
+                if ch != " ":
+                    c += 1
 
 if __name__ == "__main__":
     black = []  # list of all black pieces
     white = []  # list of all white pieces
-    if read_file("files/massacre-sample-3.in") == 1:
+    if readInput() == 1:
         node0 = Node(black, white, [], 0)
         print_moves(node0)
     else:
