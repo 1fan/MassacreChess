@@ -9,14 +9,17 @@
 
 1. Calculating the number of available moves
     (0) How to calculate
-        -> Iterate through the two lists to get the coordinate of pieces
+        -> Iterate through the two lists to get the coordinate of each piece
         -> Check 4 directions of the piece
-        -> See if the piece can move/jump in this direction (in constant time with constant space)
+        -> See if the piece can move/jump in this direction
+            -> which requires to check what is placed at a given coordinate (worst case is O(w + b))
 
     (1) Time Complexity
         w = number of white pieces on board
         b = number of black pieces on board
-        => Time complexity = 4 * w * O(1) + 4 * b * O(1) = O(b + w)
+        => Time complexity = 4 * w * O(w + b) + 4 * b * O(w + b)
+        Assume n = w = b
+        => Time complexity = O(n^2)
 
     (2) Space Complexity
         The board configuration is need to be used to check it a move is available. Aside from that, only an integer is used to keep track of the number of moves.
