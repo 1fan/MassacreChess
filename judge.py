@@ -97,8 +97,9 @@ def count_1d_move(node, coordinate, direction):
 # Count number of moves that one piece can make
 def count_4d_move(node, coordinate):
     m = 0
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
     for d in range(4):
-        m += count_1d_move(node, coordinate, d)
+        m += count_1d_move(node, coordinate, directions[d])
     return m
 
 
