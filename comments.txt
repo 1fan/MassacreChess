@@ -45,5 +45,8 @@
         Assume the number of white pieces is n, each white piece can make 4 moves(jump/move) at most,
         Therefore the branching factor is 4n at most.
 
+    (6) Maximum depth
+        Since the tree is deleted once the target black pieces is found. Therefore, the maximum depth of each tree is equal to the number of moves that have been made to kill this target black piece since last target was killed. Hence the maximum depth of all trees would be equal to the number of moves to kill the target black piece which is most difficult to kill (requires the most moves)
+
 
 
