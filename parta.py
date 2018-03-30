@@ -1,17 +1,10 @@
 from Node import *
 from judge import *
 
-
-def print_massacre(route):
-    for oneMove in route:
-        print("%s -> %s" % (oneMove[0], oneMove[1]))
-
-
 def is_empty(my_list):
     if not my_list:
         return True
     return False
-
 
 def create_new_node(current, w_i, w_f):
     new_route = list(current.route)
@@ -50,8 +43,7 @@ if __name__ == "__main__":
         node0 = Node(black, white, [], 0)
         print_moves(node0)
     else:
-        PQ = []  # A priority queue of nodes sorting by G (cost + heuristic)
-        # black.reverse()
+        PQ = []  # A priority queue of nodes sorting by f (f = cost + heuristic)
         node0 = Node(black, white, [], 0)    # initial state
         PQ.append(node0)
 
@@ -71,14 +63,12 @@ if __name__ == "__main__":
                         kill_by_accident = False
                         for b in new_node.black:
                             if b != target_b and is_killed(new_node, b):
-                                # print("Accidentally killed %s" % (Black,))
                                 kill_by_accident = True
                                 break
                         if kill_by_accident:
                             break   # forget about this move and try next move in W_list
 
                         if is_killed(new_node, target_b):
-                            # print("Targeted %s killed" % (B,))
                             target_b_is_killed = True
                             print_massacre(new_node.route)
 
@@ -92,7 +82,7 @@ if __name__ == "__main__":
                             break
                         else:
                             PQ.append(new_node)
-                            PQ = sorted(PQ, key=lambda Node: Node.G)
+                            PQ = sorted(PQ, key=lambda Node: Node.f)
                     if target_b_is_killed:
                         break
             # Check is all killed
