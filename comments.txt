@@ -11,14 +11,16 @@
     (0) How to calculate
         -> Iterate through the two lists to get the coordinate of pieces
         -> Check 4 directions of the piece
-        -> See if the piece can move/jump in this direction (in constant time)
+        -> See if the piece can move/jump in this direction (in constant time with constant space)
 
     (1) Time Complexity
         w = number of white pieces on board
         b = number of black pieces on board
-        Time complexity = 4 * w * O(1) + 4 * b * O(1) = O(max(b, w))
+        => Time complexity = 4 * w * O(1) + 4 * b * O(1) = O(b + w)
 
     (2) Space Complexity
+        The board configuration is need to be used to check it a move is available. Aside from that, only an integer is used to keep track of the number of moves.
+        => Space complexity = O(b + w)
 
 2.  Calculating the sequence of moves to eliminate all enemy pieces
     (1) Formulate Search Problem
