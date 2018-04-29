@@ -6,18 +6,14 @@ class Board:
     Initialize weight for each features. Store each feature's value.
     '''
     def __init__(self):
-        self.WhitePieces = []
-        self.BlackPieces = []
+        self.Pieces = [[], []]  # [black, white]
         self.Range = 8
         self.Corner = [(0,0),(0,7),(7,0),(7,7)]
         self.weight_f1, self.weight_f2, self.weight_f3, self.weight_f4, self.weight_f5 = 5,4,3,2,1
 
     # Feature1: Left piece number of one color
     def Self_Piece_Number(self, color):
-        if color=='white':
-            return self.WhitePieces.__len__()
-        else:
-            return self.BlackPieces.__len__()
+        return self.Pieces[color].__len__()
 
     # Feature2: The number of pieces that could be killed in 1 move. Return the number.
     def Killed_In_1move_Number(self, color):
@@ -37,6 +33,10 @@ class Board:
     def Unkilled_Piece_Number(self, color):
         pass
 
+    # Evaluation
+    def getE(self, color):
+        pass
+
     # Make a move. move: ((x0,y0),(x1,y1))
     def movePiece(self, move):
         if self.judgeValidMove(move):
@@ -48,10 +48,7 @@ class Board:
     #Insert the piece into the list accordingly
     def placePiece(self,piece):
         if self.judgeValidPlace(piece):
-            if piece.color == 'white':
-                self.WhitePieces.append(piece)
-            else:
-                self.BlackPieces.append(piece)
+            self.Pieces[piece.color].append(piece)
         else:
             raise _InvalidActionException
 
@@ -78,4 +75,10 @@ class Board:
         pass
     # Judge whether it is valid to move a piece. move: ((x0,y0),(x1,y1))
     def judgeValidMove(self, move):
+        pass
+    # Return a list of all possible moves
+    def possibleMoves(self):
+        pass
+
+    def check_win(self):
         pass
