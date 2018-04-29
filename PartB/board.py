@@ -1,6 +1,6 @@
 from referee import _InvalidActionException
+from piece import Piece
 from judge import *
-from mywatchyourback import *
 
 class Board:
     '''
@@ -16,26 +16,56 @@ class Board:
         self.weight_f1, self.weight_f2, self.weight_f3, self.weight_f4, self.weight_f5 = 5,4,3,2,1
 
     # Feature1: Left piece number of one color
-    def Self_Piece_Number(self, color):
+    def Alive_Piece_Number(self, color):
         return self.Pieces[color].__len__()
 
     # Feature2: The number of pieces that could be killed in 1 move. Return the number.
-    def Killed_In_1move_Number(self, color):
-        pass
+    def Dangerous_Piece_Number(self, color):
+        n = 0
+        directions = [[(0, -1), (0, 1)], [(-1, 0), (1, 0)]]
+        enemy = 1 - color
+        for piece in self.Pieces[color]:
+            for d in directions:
+                neighbor_location = add(piece.location, d)
+                neighbor_status = get_status(self, neighbor_location)
+                # Neighbor is empty
+                if neighbor_status == enemy or neighbor_status == CORNER:
+                    other_neighbor_location = add(piece.location, mul(d, -1))
+                    other_neighbor_status = get_status(self, other_neighbor_location)
+                    # have empty spot
+                    if other_neighbor_status == EMPTY and can_move_to(self, enemy, other_neighbor_location, d):
+                        n += 1
+                        break
+        return n
 
     # Feature3: The number of pieces that locate at edges.
     # if turns<128 : return numbers*turns/128, if 128<turns<196 , return number*(turns-128)/(196-128)
     # if turns>196, return the number.
-    def Pieces_In_Edge_Number(self, color, turns):
-        pass
+    def Eedge_Piece_Number(self, color, turns):
+        n = 0
+        for piece in self.Pieces[color]:
+            x, y = piece.location
+            edges = self.Corner[1]
+            if x in edges or y in edges:
+                n += 1
+        if turns < 128:
+            return n * turns / 128.0
+        if turns > 196:
+            return n
+        else:
+            return n * (turns - 128) / (196 - 128)
 
     # Feature4: number of total possible moves. return the number
     def Total_Possible_Moves(self, color):
-        pass
+        return len(self.possibleMoves(color))
 
     # Feature5: number of pieces that could not be killed.
-    def Unkilled_Piece_Number(self, color):
-        pass
+    def Safe_Piece_Number(self, color):
+        n = 0
+        for piece in self.Pieces[color]:
+            if is_safe(self,color,piece.location):
+                n += 1
+        return n
 
     # Evaluation
     def getE(self, color):
@@ -60,6 +90,12 @@ class Board:
             # Record features
         else:
             raise _InvalidActionException
+
+    # Move a piece (change its location)
+    def move(self, action, color):
+        for piece in self.Pieces[color]:
+            if piece.location == action[0]:
+                piece.location = action[1]
 
     def start_fight(self, my_location, my_color):
         # check if kills others
@@ -119,42 +155,57 @@ class Board:
             if piece.location == location:
                 self.Pieces[color].remove(piece)
 
-    # Move a piece (change its location)
-    def move(self, action, color):
-        for piece in self.Pieces[color]:
-            if piece.location == action[0]:
-                piece.location = action[1]
-
     # Eliminate pieces located at the edge, Update the Black and White list.
-    def eliminate_EdgePiece(self,turns):
-        if turns == 128:
-            pass
-        elif turns == 196:
-            pass
+    def eliminate_EdgePiece(self):
+        for color in [BLACK, WHITE]:
+            for piece in self.Pieces[color]:
+                x, y = piece.location
+                edges = self.Corner[1]
+                if x in edges or y in edges:
+                    self.eliminate((x, y), color)
 
     # turns=128, 192
     def shrinkBoard(self, turns):
+        self.Range = add(self.Range, (1, -1))
         if turns == 128:
             self.Corner = [(1,1), (1,6), (6,1),(6,6)]
-            self.Range = add(self.Range, (1, -1))
-            self.eliminate_EdgePiece(turns)
         elif turns == 196:
             self.Corner = [(2, 2), (2, 5), (5, 2), (5, 5)]
-            self.Range = add(self.Range, (1, -1))
-            self.eliminate_EdgePiece(turns)
+        self.eliminate_EdgePiece()
 
     # Judge whether it is valid to place a piece. piece is an instance of Piece class.
     def judgeValidPlace(self, piece):
         pass
+
     # Judge whether it is valid to move a piece. move: ((x0,y0),(x1,y1))
     def judgeValidMove(self, move):
         pass
-    # Return a list of all possible moves
-    def possibleMoves(self, color):
+
+    # Return a list of all possible placement action ()
+    # the place should be in its zone
+    def possiblePlace(self, color):
         pass
 
 
-
+    # Return a list of all possible move action ((),())
+    def possibleMoves(self, color):
+        possible_moves = []
+        directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
+        enemy = 1 - color
+        for piece in self.Pieces[color]:
+            for d in directions:
+                neighbor_location = add(piece.location,d)
+                neighbor_status = get_status(self, neighbor_location)
+                # Can move?
+                if neighbor_status == EMPTY:
+                    possible_moves.append((piece.location, neighbor_location))
+                # What about jump?
+                elif neighbor_status == enemy:
+                    opposite_location = add(neighbor_location,d)
+                    opposite_status = get_status(self, opposite_location)
+                    if opposite_status == EMPTY:
+                        possible_moves.append((piece.location, opposite_location))
+            return possible_moves
 
     def check_win(self):
         pass

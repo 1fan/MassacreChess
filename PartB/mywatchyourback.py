@@ -6,15 +6,6 @@ FRIENDS = {WHITE: {WHITE, CORNER}, BLACK: {BLACK, CORNER}}
 DIRECTIONS = UP, DOWN, LEFT, RIGHT = (0, -1), (0, 1), (-1, 0), (1, 0)
 B, W = [0, 1]
 
-def step(position, direction):
-    """
-    Take an (x, y) tuple `position` and a `direction` (UP, DOWN, LEFT or RIGHT)
-    and combine to produce a new tuple representing a position one 'step' in
-    that direction from the original position.
-    """
-    px, py = position
-    dx, dy = direction
-    return (px+dx, py+dy)
 
 
 
@@ -85,45 +76,6 @@ class player:
 
 
 
-
-
-class Piece:
-    """docstring for """
-    def __init__(self, player, pos, board, n_killed_moves, n_possible_moves):
-        self.player = player
-        self.pos = pos
-        self.board = board
-        self.alive = True
-        self.n_killed_moves = n_killed_moves #massacre
-        self.n_possible_moves = len(possible_moves)
-
-    """
-    How to decide the status of a given position
-        board => WHITE BLACK CORNER BLANK
-        range => outside
-    """
-
-    def is_inside(self, position):
-        c, r = position
-        x, y = self.board.range
-        return c in range(x, y+1) and r in range(x, y+1)
-
-
-    def possible_moves(self):
-        possible_moves = []
-        for direction in DIRECTIONS:
-            neighbor_pos = step(self.pos, direction)
-            if is_inside(neighbor_pos):
-                if self.board.grid[neighbor_pos] == BLANK:
-                    possible_moves.append(neighbor_pos)
-                    continue # a jump move is not possible in this direction
-
-            # if not, how about a jump move to the opposite square?
-            opposite_pos = step(neighbor_pos, direction)
-            if is_inside(opposite_pos):
-                if self.board.grid[opposite_pos] == BLANK:
-                    possible_moves.append(opposite_pos)
-        return possible_moves
 
     #how many moves it takes so that this piece is killed
     def get_killed _moves(self):

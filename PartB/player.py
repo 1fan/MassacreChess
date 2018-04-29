@@ -17,18 +17,19 @@ class Player:
     def action(self, turns):
         if self.phase == "placing":
             if turns < 24:
-                self.makePlace()
                 self.turns += 1
-            elif turns == 24:
+                return self.best_place()
+            if turns == 24:
                 self.phase = "moving"
                 self.turns = 0
-                self.best_move()
                 self.turns += 1
+                return self.best_move()
+
         if self.phase == "moving":
             if turns in [128,196]:
                 self.board.shrinkBoard(turns)
-            self.best_move()
             self.turns += 1
+            return self.best_move()
 
     def update(self, action):
         # adjust opponent's piece
@@ -62,6 +63,6 @@ class Player:
         return root.children[best_move]
 
     # Make decision of placing a piece, call Board.placePiece() function to update the board.
-    def makePlace(self):
+    def best_place(self):
         pass
     #   return place. (,).
