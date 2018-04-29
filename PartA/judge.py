@@ -1,3 +1,22 @@
+# Status of a given position
+def is_corner(coordinate):
+    corners = [(0, 0), (0, 7), (7, 0), (7, 7)]
+    return coordinate in corners
+
+
+def is_outside(coordinate):
+    c, r = coordinate
+    return c <= -1 or c >= 8 or r <= -1 or r >= 8
+
+
+def is_black(node, coordinate):
+    return coordinate in node.black
+
+
+def is_white(node, coordinate):
+    return coordinate in node.white
+
+
 def is_enemy(node, coordinate, direction):
     neighbor = neighbor_of(coordinate, direction)
     if is_corner(neighbor):
@@ -28,22 +47,7 @@ def print_moves(node):
     print(m)
 
 
-def is_corner(coordinate):
-    corners = [(0, 0), (0, 7), (7, 0), (7, 7)]
-    return coordinate in corners
 
-
-def is_outside(coordinate):
-    c, r = coordinate
-    return c <= -1 or c >= 8 or r <= -1 or r >= 8
-
-
-def is_black(node, coordinate):
-    return coordinate in node.black
-
-
-def is_white(node, coordinate):
-    return coordinate in node.white
 
 
 # "-" in board

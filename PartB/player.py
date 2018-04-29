@@ -5,14 +5,14 @@ import numpy as np
 from referee import _InvalidActionException
 
 
-class player:
+class Player:
     # initialize: turns, board, phase, color:BLACK, WHITE = 0, 1
     def __init__(self, colour):
         match_color = {'black': 0, 'white': 1}
         self.color = match_color[colour]
         self.turns = 0
         self.phase = "placing"
-        self.board = Board
+        self.board = Board()
 
     def action(self, turns):
         if self.phase == "placing":
@@ -20,18 +20,20 @@ class player:
                 self.makePlace()
                 self.turns += 1
             elif turns == 24:
-                self.phase == "moving"
+                self.phase = "moving"
                 self.turns = 0
-                self.makeMove()
+                self.best_move()
                 self.turns += 1
         if self.phase == "moving":
             if turns in [128,196]:
-                Board.shrinkBoard(turns)
-            self.makeMove()
+                self.board.shrinkBoard(turns)
+            self.best_move()
             self.turns += 1
 
     def update(self, action):
+        # adjust opponent's piece
         # if action is a nested tuple --> it is a 'move'; else --> it is a 'place'
+        color = 1 - self.color
         if isinstance(action[0], tuple):
             self.board.movePiece(action)
         elif isinstance(action[0], int):
@@ -39,8 +41,10 @@ class player:
         else:
             raise _InvalidActionException
 
+
+
     # Make decision of move a piece
-    def makeMove(self):
+    def best_move(self):
         depth_limit = 4  # must be even number for this implementation
         root = Node(depth_limit, self.color, self.board, None)
         # d%2 == 0 -> min's move -> +inf
