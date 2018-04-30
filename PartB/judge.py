@@ -1,6 +1,13 @@
 # Helper
+import numpy as np
+
 EMPTY, BLACK, WHITE, CORNER, OUTSIDE = -1, 0, 1, 2, 3
 INIT_BEST_VAL = [+np.inf, -np.inf]
+
+
+def get_zone(param, param1):
+    pass
+
 
 ZONE = [get_zone(2, 7), get_zone(0, 5)]
 
@@ -21,12 +28,15 @@ def mul(tup, factor):
     x, y = tup
     return factor * x, factor * y
 
+# multiple two tuples
+def mul2Tuple():
+    pass
 
 # Status of a given position
 def get_status(board, location):
     x, y = location
     minr, maxr = board.Range
-    if not (x in range(minr, maxr) and y in range(minr, maxr)):
+    if not ((x in range(minr, maxr)) and (y in range(minr, maxr))):
         return OUTSIDE
     if location in board.Corner:
         return CORNER

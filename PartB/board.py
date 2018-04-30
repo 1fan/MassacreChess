@@ -15,7 +15,7 @@ class Board:
         self.Corner = [(0,0),(0,7),(7,0),(7,7)]
         self.weights = (1, 2, 3, 4, 5) # Should be set to reasonable values
 
-    # Return a tuple of all features
+    # Return a tuple of all features' value
     def get_features(self, color, phase_turns):
         n_alive, n_danger, n_edge, n_safe, n_moves = 0, 0, 0, 0, 0
         directions = [[(0, -1), (0, 1)], [(-1, 0), (1, 0)]]
@@ -50,30 +50,21 @@ class Board:
         return n_alive, n_danger, f_edge, f_moves, n_safe
 
     # Make a move. move: ((x0,y0),(x1,y1))
+    # Consider to change into list.indexof method
     def move_piece(self, action, color):
-        if self.judgeValidMove(action):
-            # 1: update the moved piece in the list.
-            self.do(action, color)
-            self.start_fight(action[1], color)
-            # Record features
-        else:
-            raise _InvalidActionException
-
-    # Move a piece (change its location)
-    def do(self, action, color):
+        # 1: update the moved piece in the list.
         for piece in self.Pieces[color]:
             if piece.location == action[0]:
                 piece.location = action[1]
+        self.start_fight(action[1], color)
+        # Record features
 
     # Insert the piece into the list accordingly
     def place_piece(self, action, color):
-        if self.judgeValidPlace(action):
-            piece = Piece(action, color)
-            self.Pieces[color].append(piece)
-            self.start_fight(action, color)
-            # Record features
-        else:
-            raise _InvalidActionException
+        piece = Piece(action, color)
+        self.Pieces[color].append(piece)
+        self.start_fight(action, color)
+        # Record features
 
     def start_fight(self, my_location, my_color):
         # check if kills others
@@ -94,7 +85,6 @@ class Board:
                     # neighbor enemy is killed and check next dimension
                     if opposite_status == friend or opposite_status == CORNER:
                         self.eliminate(neighbor_location, enemy)
-                        break
                     # check the other neighbor enemy
                     else:
                         other_neighbor_location = add(my_location, mul(d, -1))
@@ -106,6 +96,7 @@ class Board:
                             break
 
     # Eliminate a piece
+    # Consider using list.indexof() and list.remove(index)
     def eliminate(self, location, color):
         for piece in self.Pieces[color]:
             if piece.location == location:
@@ -117,7 +108,7 @@ class Board:
             for piece in self.Pieces[color]:
                 x, y = piece.location
                 edges = self.Corner[1]
-                if x in edges or y in edges:
+                if (x in edges) or (y in edges) and not ((x in edges) and (y in edges)):
                     self.eliminate((x, y), color)
 
     # turns=128, 192
@@ -130,13 +121,13 @@ class Board:
         self.eliminate_edge_piece()
         return
 
-    # Judge whether it is valid to place a piece. piece is an instance of Piece class.
-    def judgeValidPlace(self, piece):
-        pass
-
-    # Judge whether it is valid to move a piece. move: ((x0,y0),(x1,y1))
-    def judgeValidMove(self, move):
-        pass
+    # # Judge whether it is valid to place a piece. piece is an instance of Piece class.
+    # def judgeValidPlace(self, piece):
+    #     pass
+    #
+    # # Judge whether it is valid to move a piece. move: ((x0,y0),(x1,y1))
+    # def judgeValidMove(self, move):
+    #     pass
 
 
     # Return a list of all possible placement action ()
@@ -144,7 +135,7 @@ class Board:
     def possible_places(self, color):
         pass
 
-    # Return a list of all possible move action ((),())
+    # Return a list of all possible move action [((),()), ]
     def possible_moves(self, color):
         possible_moves = []
         directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]

@@ -18,14 +18,14 @@ class Node(object):
 
     def create_children(self):
         if self.depth >= 0 and not self.board.game_ended():
-            for piece in self.board.pieces[self.my_color]:
+            for piece in self.board.Pieces[self.my_color]:
                 possible_moves = piece.possible_moves()
                 if possible_moves:
                     for move in possible_moves:
                         self.children.append(Node(self.depth - 1,
                                                   1 - self.my_color,  # invert between 0(black) and 1(white)
                                                   self.board.move_piece(move, self.my_color),
-                                                  -self.value))
+                                                  (-1)*self.value))
 
     def minmax(self, node, depth_limit, turns):
         if (depth_limit == 0) or (node.board.check_win()):
@@ -45,8 +45,8 @@ class Node(object):
     def get_e(self, turns):
         my_e = 0
         enemy_e = 0
-        for wf in mul(self.board.weights, self.board.get_features(self.my_color, turns)):
+        for wf in mul2Tuple(self.board.weights, self.board.get_features(self.my_color, turns)):
             my_e += wf
-        for wf in mul(self.board.weights, self.board.get_features(1 - self.my_color, turns)):
+        for wf in mul2Tuple(self.board.weights, self.board.get_features(1 - self.my_color, turns)):
             enemy_e += wf
         return my_e - enemy_e
