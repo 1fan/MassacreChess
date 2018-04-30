@@ -1,7 +1,5 @@
 from board import Board
-from piece import Piece
 from node import Node
-import numpy as np
 from referee import _InvalidActionException
 
 
@@ -10,7 +8,6 @@ class Player:
     def __init__(self, colour):
         match_color = {'black': 0, 'white': 1}
         self.color = match_color[colour]
-        self.turns = 0
         self.phase = "placing"
         self.board = Board()
 
@@ -26,23 +23,20 @@ class Player:
                 return self.best_move()
 
         if self.phase == "moving":
-            if turns in [128,196]:
-                self.board.shrinkBoard(turns)
-            self.turns += 1
+            if turns in [128, 196]:
+                self.board.shrink_board(turns)
             return self.best_move()
 
     def update(self, action):
         # adjust opponent's piece
         # if action is a nested tuple --> it is a 'move'; else --> it is a 'place'
-        color = 1 - self.color
+        enemy_color = 1 - self.color
         if isinstance(action[0], tuple):
-            self.board.movePiece(action)
+            self.board.move_piece(action, enemy_color)
         elif isinstance(action[0], int):
-            self.board.placePiece(action)
+            self.board.place_piece(action, enemy_color)
         else:
             raise _InvalidActionException
-
-
 
     # Make decision of move a piece
     def best_move(self):
@@ -55,7 +49,7 @@ class Player:
         best_move = 0
         i = 0
         for child in root.children:
-            val = child.MinMax(child, depth_limit - 1)
+            val = child.minmax(child, depth_limit - 1)
             # update best value and move for min max
             if ((child.depth % 2 == 0) and (val < best_val)) or ((child.depth % 2 == 1) and (val > best_val)):
                 best_val = val

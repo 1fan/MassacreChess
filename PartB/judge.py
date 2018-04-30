@@ -1,5 +1,6 @@
 # Helper
 EMPTY, BLACK, WHITE, CORNER, OUTSIDE = -1, 0, 1, 2, 3
+INIT_BEST_VAL = [+np.inf, -np.inf]
 
 ZONE = [get_zone(2, 7), get_zone(0, 5)]
 
@@ -64,6 +65,13 @@ def is_safe(board, color, location):
     safe = [color, OUTSIDE]
     return (u in safe or d in safe) and (l in safe or r in safe)
 
+def get_f_edge(n, turns):
+    if turns < 128:
+        return n * turns / 128.0
+    if turns > 196:
+        return n
+    else:
+        return n * (turns - 128) / (196 - 128)
 
 
 
