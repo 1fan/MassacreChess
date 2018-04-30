@@ -72,7 +72,7 @@ class _Options:
     optional arguments:
       -h, --help            show this help message and exit
       -d [DELAY], --delay [DELAY]
-                            how long (float, seconds) to wait between turns
+                            how long (float, seconds) to wait between phase_turns
     ---------------------
     """
     def __init__(self):
@@ -85,7 +85,7 @@ class _Options:
                 help="full name of module containing Black Player class")
         parser.add_argument('-d', '--delay',
                 type=float, default=DELAY_DEFAULT, nargs="?",
-                help="how long (float, seconds) to wait between turns")
+                help="how long (float, seconds) to wait between phase_turns")
 
         args = parser.parse_args()
 
@@ -149,7 +149,7 @@ class _Game:
         displayboard = [[_Game._DISPLAY[p] for p in row] for row in self.board]
         board = '\n'.join(' '.join(row) for row in displayboard)
         if self.playing():
-            progress = f'{self.turns} turns into the {self.phase} phase'
+            progress = f'{self.phase_turns} phase_turns into the {self.phase} phase'
         else:
             progress = 'game over!'
         return f'{board}\n{progress}'

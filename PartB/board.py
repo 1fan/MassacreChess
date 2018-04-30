@@ -14,10 +14,9 @@ class Board:
         self.Range = (0, 8) # location should be in this range to be inside the board
         self.Corner = [(0,0),(0,7),(7,0),(7,7)]
         self.weights = (1, 2, 3, 4, 5) # Should be set to reasonable values
-        self.turns = 0
 
     # Return a tuple of all features
-    def get_features(self, color, turns):
+    def get_features(self, color, phase_turns):
         n_alive, n_danger, n_edge, n_safe, n_moves = 0, 0, 0, 0, 0
         directions = [[(0, -1), (0, 1)], [(-1, 0), (1, 0)]]
         enemy = 1 - color
@@ -45,7 +44,7 @@ class Board:
                     if x in edges or y in edges:
                         n_edge += 1
         # Feature3:
-        f_edge = get_f_edge(n_edge, turns)
+        f_edge = get_f_edge(n_edge, phase_turns)
         # Feature4: number of total possible moves. return the number
         f_moves = len(self.possible_moves(color))
         return n_alive, n_danger, f_edge, f_moves, n_safe
@@ -196,21 +195,21 @@ class Board:
         return n
 
     # Feature3: The number of pieces that locate at edges.
-    # if turns<128 : return numbers*turns/128, if 128<turns<196 , return number*(turns-128)/(196-128)
-    # if turns>196, return the number.
-    def Eedge_Piece_Number(self, color, turns):
+    # if phase_turns<128 : return numbers*phase_turns/128, if 128<phase_turns<196 , return number*(phase_turns-128)/(196-128)
+    # if phase_turns>196, return the number.
+    def Eedge_Piece_Number(self, color, phase_turns):
         n = 0
         for piece in self.Pieces[color]:
             x, y = piece.location
             edges = self.Corner[1]
             if x in edges or y in edges:
                 n += 1
-        if turns < 128:
-            return n * turns / 128.0
-        if turns > 196:
+        if phase_turns < 128:
+            return n * phase_turns / 128.0
+        if phase_turns > 196:
             return n
         else:
-            return n * (turns - 128) / (196 - 128)
+            return n * (phase_turns - 128) / (196 - 128)
 
     # Feature4: number of total possible moves. return the number
     def Total_Possible_Moves(self, color):

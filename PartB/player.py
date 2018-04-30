@@ -4,29 +4,41 @@ from referee import _InvalidActionException
 
 
 class Player:
-    # initialize: turns, board, phase, color:BLACK, WHITE = 0, 1
+    # initialize: phase_turns, board, phase, color:BLACK, WHITE = 0, 1
     def __init__(self, colour):
         match_color = {'black': 0, 'white': 1}
         self.color = match_color[colour]
         self.phase = "placing"
+        self.phase_turns = 0
         self.board = Board()
 
     def action(self, turns):
         if self.phase == "placing":
             if turns < 24:
-                self.turns += 1
+                self.phase_turns += 1
                 return self.best_place()
-            if turns == 24:
+            elif turns == 24:
                 self.phase = "moving"
-                self.turns = 0
-                self.turns += 1
-                return self.best_move()
+                self.phase_turns = 0
 
         if self.phase == "moving":
-            # shrink the board before or after my move
+            # shrink the board before my move
             if turns in [128, 196]:
                 self.board.shrink_board(turns)
-            return self.best_move()
+
+            # Give a best move
+            best_move = self.best_move()
+
+            # Make the move on my board
+            self.board.place_piece(best_move, self.color)
+            self.phase_turns += 1
+
+            # shrink the board after my move
+            turns += 1
+            if turns in [128, 196]:
+                self.board.shrink_board(turns)
+
+            return best_move
 
     def update(self, action):
         # adjust opponent's piece
@@ -50,7 +62,7 @@ class Player:
         best_move = 0
         i = 0
         for child in root.children:
-            val = child.minmax(child, depth_limit - 1)
+            val = child.minmax(child, depth_limit - 1, self.phase_turns)
             # update best value and move for min max
             if ((child.depth % 2 == 0) and (val < best_val)) or ((child.depth % 2 == 1) and (val > best_val)):
                 best_val = val
