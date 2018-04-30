@@ -207,5 +207,9 @@ class Board:
                         possible_moves.append((piece.location, opposite_location))
             return possible_moves
 
-    def check_win(self):
-        pass
+    def game_ended(self):
+        if len(self.Pieces[BLACK]) == 0:
+            return True
+        if len(self.Pieces[WHITE]) == 0:
+            return True
+        return False

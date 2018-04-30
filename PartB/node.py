@@ -1,4 +1,5 @@
 import numpy as np
+from board import Board
 
 
 class Node(object):
@@ -18,13 +19,16 @@ class Node(object):
             return INIT_BEST_VAL[self.depth % 2]
 
     def CreateChildren(self):
-        if self.depth >= 0:
+        if self.depth >= 0 and not self.board.game_ended():
             for piece in self.board.pieces[self.player]:
-                for move in piece.possibleMoves():
-                    self.children.append(Node(self.depth - 1,
-                                              1 - self.player,  # invert between 0(black) and 1(white)
-                                              self.board.movePiece(move),
-                                              -self.value))
+                possible_moves = piece.possibleMoves()
+                if possible_moves:
+                    for move in piece.possibleMoves():
+                        self.children.append(Node(self.depth - 1,
+                                                  1 - self.player,  # invert between 0(black) and 1(white)
+                                                  self.board.movePiece(move),
+                                                  -self.value))
+
 
     def MinMax(self, node, depth_limit):
         if (depth_limit == 0) or (node.board.check_win()):
