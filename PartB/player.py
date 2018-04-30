@@ -23,6 +23,7 @@ class Player:
                 return self.best_move()
 
         if self.phase == "moving":
+            # shrink the board before or after my move
             if turns in [128, 196]:
                 self.board.shrink_board(turns)
             return self.best_move()

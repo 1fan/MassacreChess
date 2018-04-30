@@ -21,10 +21,10 @@ class Node(object):
             for piece in self.board.pieces[self.my_color]:
                 possible_moves = piece.possible_moves()
                 if possible_moves:
-                    for move in piece.possible_moves():
+                    for move in possible_moves:
                         self.children.append(Node(self.depth - 1,
                                                   1 - self.my_color,  # invert between 0(black) and 1(white)
-                                                  self.board.move_piece(move),
+                                                  self.board.move_piece(move, self.my_color),
                                                   -self.value))
 
     def minmax(self, node, depth_limit):

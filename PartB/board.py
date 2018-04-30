@@ -54,11 +54,17 @@ class Board:
     def move_piece(self, action, color):
         if self.judgeValidMove(action):
             # 1: update the moved piece in the list.
-            self.move(action, color)
+            self.do(action, color)
             self.start_fight(action[1], color)
             # Record features
         else:
             raise _InvalidActionException
+
+    # Move a piece (change its location)
+    def do(self, action, color):
+        for piece in self.Pieces[color]:
+            if piece.location == action[0]:
+                piece.location = action[1]
 
     # Insert the piece into the list accordingly
     def place_piece(self, action, color):
@@ -69,12 +75,6 @@ class Board:
             # Record features
         else:
             raise _InvalidActionException
-
-    # Move a piece (change its location)
-    def move(self, action, color):
-        for piece in self.Pieces[color]:
-            if piece.location == action[0]:
-                piece.location = action[1]
 
     def start_fight(self, my_location, my_color):
         # check if kills others
