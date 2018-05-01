@@ -5,6 +5,7 @@ EMPTY, BLACK, WHITE, CORNER, OUTSIDE = -1, 0, 1, 2, 3
 INIT_BEST_VAL = [+np.inf, -np.inf]
 
 
+
 def get_zone(param, param1):
     pass
 
