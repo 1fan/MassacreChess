@@ -42,7 +42,7 @@ def print_moves(node):
         m += count_4d_move(node, p)
     print(m)
     m = 0
-    for p in node.white:
+    for p in node.blackw:
         m += count_4d_move(node, p)
     print(m)
 
