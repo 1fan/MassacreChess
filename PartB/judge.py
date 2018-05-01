@@ -22,12 +22,12 @@ def get_zone(x, y):
 def add(tup1, tup2):
     x1, y1 = tup1
     x2, y2 = tup2
-    return x1+x2, y1+y2
+    return (x1+x2, y1+y2)
 
 
 def mul(tup, factor):
     x, y = tup
-    return factor * x, factor * y
+    return (factor * x, factor * y)
 
 
 # multiple two tuples

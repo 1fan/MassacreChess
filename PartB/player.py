@@ -32,12 +32,14 @@ class Player:
 
     def action(self, turns):
         if self.phase == "placing":
-            if turns < 24:
+
+            if self.phase_turns < 24:
                 self.phase_turns += 1
                 Best_Place = self.best_place()
-                self.POSSIBLE_PLACE[self.color].remove(Best_Place)
+                self.remove_from_possible_place(Best_Place)
+                self.board.place_piece(Best_Place, self.color)
                 return Best_Place
-            elif turns == 24:
+            elif self.phase_turns >= 24:
                 self.phase = "moving"
                 self.phase_turns = 0
 
@@ -45,7 +47,6 @@ class Player:
             # shrink the board before my move
             if turns in [128, 196]:
                 self.board.shrink_board(turns)
-
             # Give a best move
             Best_Move = self.best_move()
 
@@ -64,13 +65,21 @@ class Player:
         # adjust opponent's piece
         # if action is a nested tuple --> it is a 'move'; else --> it is a 'place'
         enemy_color = 1 - self.color
+        self.phase_turns += 1
         if isinstance(action[0], tuple):
             self.board.move_piece(action, enemy_color)
         elif isinstance(action[0], int):
             self.board.place_piece(action, enemy_color)
-            self.POSSIBLE_PLACE[1-self.color].remove(action)
+            self.remove_from_possible_place(action)
         else:
             raise _InvalidActionException
+
+    def remove_from_possible_place(self, location):
+        c ,r = location
+        if r in range(2, 8):
+            self.POSSIBLE_PLACE[BLACK].remove(location)
+        if r in range(0, 6):
+            self.POSSIBLE_PLACE[WHITE].remove(location)
 
     # Make decision of move a piece
     def best_move(self):

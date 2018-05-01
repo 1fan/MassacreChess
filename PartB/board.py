@@ -63,6 +63,7 @@ class Board:
     def place_piece(self, action, color):
         piece = Piece(action, color)
         self.Pieces[color].append(piece)
+        print("board", len(self.Pieces[color]))
         self.start_fight(action, color)
         # Record features
 
@@ -140,6 +141,7 @@ class Board:
         possible_moves = []
         directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
         enemy = 1 - color
+        print(self.Pieces[color])
         for piece in self.Pieces[color]:
             for d in directions:
                 neighbor_location = add(piece.location,d)
