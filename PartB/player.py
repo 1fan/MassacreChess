@@ -21,12 +21,14 @@ class Player:
     def initLegalPlace(self):
         for c in range(0,8):
             for r in range(2,8):
-                self.POSSIBLE_PLACE[BLACK].append((c,r))
-                self.POSSIBLE_PLACE[BLACK].remove((0,7),(7,7))
+                self.POSSIBLE_PLACE[BLACK].append((c, r))
+        self.POSSIBLE_PLACE[BLACK].remove((0, 7))
+        self.POSSIBLE_PLACE[BLACK].remove((7, 7))
         for c in range(0,8):
             for r in range(0,6):
                 self.POSSIBLE_PLACE[WHITE].append((c,r))
-        self.POSSIBLE_PLACE[WHITE].remove((0,0),(7,0))
+        self.POSSIBLE_PLACE[WHITE].remove((0, 0))
+        self.POSSIBLE_PLACE[WHITE].remove((7, 0))
 
     def action(self, turns):
         if self.phase == "placing":
