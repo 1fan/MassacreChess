@@ -29,9 +29,13 @@ def mul(tup, factor):
     x, y = tup
     return factor * x, factor * y
 
+
 # multiple two tuples
-def mul2Tuple():
-    pass
+def mul2list(list1, list2):
+    result = []
+    for i in len(list1):
+        result.append(list1[i] * list2[i])
+    return result
 
 # Status of a given position
 def get_status(board, location):
