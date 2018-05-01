@@ -47,7 +47,7 @@ class Board:
         f_edge = get_f_edge(n_edge, phase_turns)
         # Feature4: number of total possible moves. return the number
         f_moves = len(self.possible_moves(color))
-        return [n_alive, n_danger, f_edge, f_moves, n_safe]
+        return [n_alive, -n_danger, -f_edge, f_moves, n_safe]
 
     # Make a move. move: ((x0,y0),(x1,y1))
     # Consider to change into list.indexof method
