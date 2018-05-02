@@ -31,17 +31,13 @@ class Player:
         self.POSSIBLE_PLACE[WHITE].remove((7, 0))
 
     def action(self, turns):
+        print(self.phase, "turns: ",turns, "phase_turns: ", self.phase_turns)
         if self.phase == "placing":
-
-            if self.phase_turns < 24:
-                self.phase_turns += 1
-                Best_Place = self.best_place()
-                self.remove_from_possible_place(Best_Place)
-                self.board.place_piece(Best_Place, self.color)
-                return Best_Place
-            elif self.phase_turns >= 24:
-                self.phase = "moving"
-                self.phase_turns = 0
+            Best_Place = self.best_place()
+            self.remove_from_possible_place(Best_Place)
+            self.board.place_piece(Best_Place, self.color)
+            self.update_turns()
+            return Best_Place
 
         if self.phase == "moving":
             # shrink the board before my move
@@ -51,7 +47,7 @@ class Player:
             Best_Move = self.best_move()
 
             # Make the move on my board
-            self.board.place_piece(Best_Move, self.color)
+            self.board.move_piece(Best_Move, self.color)
             self.phase_turns += 1
 
             # shrink the board after my move
@@ -65,7 +61,7 @@ class Player:
         # adjust opponent's piece
         # if action is a nested tuple --> it is a 'move'; else --> it is a 'place'
         enemy_color = 1 - self.color
-        self.phase_turns += 1
+        self.update_turns()
         if isinstance(action[0], tuple):
             self.board.move_piece(action, enemy_color)
         elif isinstance(action[0], int):
@@ -73,6 +69,13 @@ class Player:
             self.remove_from_possible_place(action)
         else:
             raise _InvalidActionException
+
+    def update_turns(self):
+        self.phase_turns += 1
+        if self.phase == "placing" and self.phase_turns == 24:
+            self.phase = "moving"
+            self.phase_turns = 0
+
 
     def remove_from_possible_place(self, location):
         c ,r = location

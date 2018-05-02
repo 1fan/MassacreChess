@@ -12,7 +12,7 @@ class Board:
         white = []
         self.Pieces = [black, white]  # [black, white] list of Piece
         self.Range = (0, 8) # location should be in this range to be inside the board
-        self.Corner = [(0,0),(0,7),(7,0),(7,7)]
+        self.Corner = [(0,0),(0,7),(7,7),(7,0)]
         self.weights = [1, 2, 3, 4, 5] # Should be set to reasonable values
 
     # Return a tuple of all features' value
@@ -63,16 +63,37 @@ class Board:
     def place_piece(self, action, color):
         piece = Piece(action, color)
         self.Pieces[color].append(piece)
-        print("board", len(self.Pieces[color]))
         self.start_fight(action, color)
         # Record features
 
     def start_fight(self, my_location, my_color):
         # check if kills others
-        directions = [[(0, -1), (0, 1)], [(-1, 0), (1, 0)]]
+        directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
         friend = my_color
         enemy = 1 - my_color
+        for direction in directions:
+            neighbor_location = add(my_location, direction)
+            neighbor_status = get_status(self, neighbor_location)
+            # neighbor is different color
+            if neighbor_status == enemy:
+                opposite_location = add(neighbor_location, direction)
+                opposite_status = get_status(self, opposite_location)
+                if opposite_status == friend or opposite_status == CORNER:
+                    self.eliminate(neighbor_location, enemy)
+            # check if is killed
+        for direction in directions:
+            neighbor_location = add(my_location, direction)
+            neighbor_status = get_status(self, neighbor_location)
+            # neighbor is different color
+            if neighbor_status == enemy:
+                other_neighbor_location = add(my_location, mul(direction, -1))
+                other_neighbor_status = get_status(self, other_neighbor_location)
+                if other_neighbor_status == enemy or other_neighbor_status == CORNER:
+                    self.eliminate(my_location, my_color)
+                    break
+        '''
         me_dead = False
+        directions = [[(0, -1), (0, 1)], [(-1, 0), (1, 0)]]
         for dd in directions:
             if me_dead:
                 break
@@ -95,6 +116,8 @@ class Board:
                             self.eliminate(my_location, my_color)
                             me_dead = True
                             break
+        '''
+
 
     # Eliminate a piece
     # Consider using list.indexof() and list.remove(index)
@@ -102,26 +125,83 @@ class Board:
         for piece in self.Pieces[color]:
             if piece.location == location:
                 self.Pieces[color].remove(piece)
+                break
 
     # Eliminate pieces located at the edge, Update the Black and White list.
     def eliminate_edge_piece(self):
+        edges = self.Corner[1]
         for color in [BLACK, WHITE]:
+            removed_pieces = []
             for piece in self.Pieces[color]:
                 x, y = piece.location
-                edges = self.Corner[1]
-                if (x in edges) or (y in edges) and not ((x in edges) and (y in edges)):
-                    self.eliminate((x, y), color)
+
+                if (x in edges) and not (y in edges):
+                    removed_pieces.append(piece.location)
+                if (y in edges) and not (x in edges):
+                    removed_pieces.append(piece.location)
+            if removed_pieces:
+                for piece in removed_pieces:
+                    self.eliminate(piece, color)
+
+    # for debug
+    def print_board(self):
+        for color in [0 ,1]:
+            pieces = []
+            for piece in self.Pieces[color]:
+                pieces.append(piece.location)
+            print(color, pieces)
 
     # turns=128, 192
     def shrink_board(self, turns):
-        self.Range = add(self.Range, (1, -1))
-        if turns == 128:
-            self.Corner = [(1, 1), (1, 6), (6, 1), (6, 6)]
-        elif turns == 196:
-            self.Corner = [(2, 2), (2, 5), (5, 2), (5, 5)]
-        self.eliminate_edge_piece()
-        return
 
+        print("try to eliminate edges")
+        self.print_board()
+        self.eliminate_edge_piece()
+        self.Range = add(self.Range, (1, -1))
+        print("turns: ", turns)
+        if turns == 128:
+            self.Corner = [(1, 1), (1, 6), (6, 6), (6, 1)]
+        elif turns == 196:
+            self.Corner = [(2, 2), (2, 5), (5, 5), (5, 2)]
+
+        # add corner and eliminate its neighbor if possible
+        removed_pieces = [[],[]]
+        # check each corner from the top left anticlockwise
+        for corner in self.Corner:
+            # find the corner from every pieces in the list
+            for color in [BLACK, WHITE]:
+                for piece in self.Pieces[color]:
+                    # remove the piece at corner
+                    if piece.location == corner:
+                        removed_pieces[color].append(piece.location)
+            # the corner kills its neighbor
+            for d in self.get_dd(corner):
+                neighbor_location = add(corner, d)
+                neighbor_status = get_status(self, neighbor_location)
+                opposite_location = add(neighbor_location, d)
+                opposite_status = get_status(self, opposite_location)
+                # The two adjacent location have pieces with opposite color
+                if neighbor_status + opposite_status == 1:  # status can only be EMPTY(-1) BLACK(0) WHITE(1)
+                    removed_pieces[neighbor_status].append(neighbor_location)
+        for color in [0, 1]:
+            if removed_pieces[color]:
+                for location in removed_pieces[color]:
+                    self.eliminate(location, color)
+        self.print_board()
+
+
+    def get_dd(self, location):
+        dd = []
+        c, r = location
+        if c == self.Range[0]:
+            dd.append((1, 0))
+        else:
+            dd.append((-1, 0))
+        if r == self.Range[0]:
+            dd.append((0, 1))
+        else:
+            dd.append((0, -1))
+        return dd
     # # Judge whether it is valid to place a piece. piece is an instance of Piece class.
     # def judgeValidPlace(self, piece):
     #     pass
@@ -141,7 +221,6 @@ class Board:
         possible_moves = []
         directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
         enemy = 1 - color
-        print(self.Pieces[color])
         for piece in self.Pieces[color]:
             for d in directions:
                 neighbor_location = add(piece.location,d)
@@ -155,7 +234,7 @@ class Board:
                     opposite_status = get_status(self, opposite_location)
                     if opposite_status == EMPTY:
                         possible_moves.append((piece.location, opposite_location))
-            return possible_moves
+        return possible_moves
 
     def game_ended(self):
         if len(self.Pieces[BLACK]) == 0:
@@ -216,25 +295,3 @@ class Board:
                 n += 1
         return n
 '''
-'''
-        for direction in directions:
-            neighbor_location = add(my_location, direction)
-            neighbor_status = get_status(self, neighbor_location)
-            # neighbor is different color
-            if neighbor_status == enemy:
-                opposite_location = add(neighbor_location, direction)
-                opposite_status = get_status(self, opposite_location)
-                if opposite_status == friend or opposite_status == CORNER:
-                    self.eliminate(neighbor_location, enemy)
-        # check if is killed
-        for direction in directions:
-            neighbor_location = add(my_location, direction)
-            neighbor_status = get_status(self, neighbor_location)
-            # neighbor is different color
-            if neighbor_status == enemy:
-                other_neighbor_location = add(my_location, mul(direction, -1))
-                other_neighbor_status = get_status(self, other_neighbor_location)
-                if other_neighbor_status == enemy or other_neighbor_status == CORNER:
-                    self.eliminate(my_location, my_color)
-                    break
-        '''
