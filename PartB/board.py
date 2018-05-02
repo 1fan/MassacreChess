@@ -153,12 +153,8 @@ class Board:
 
     # turns=128, 192
     def shrink_board(self, turns):
-
-        print("try to eliminate edges")
-        self.print_board()
         self.eliminate_edge_piece()
         self.Range = add(self.Range, (1, -1))
-        print("turns: ", turns)
         if turns == 128:
             self.Corner = [(1, 1), (1, 6), (6, 6), (6, 1)]
         elif turns == 196:
@@ -187,7 +183,6 @@ class Board:
             if removed_pieces[color]:
                 for location in removed_pieces[color]:
                     self.eliminate(location, color)
-        self.print_board()
 
 
     def get_dd(self, location):

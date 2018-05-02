@@ -31,7 +31,6 @@ class Player:
         self.POSSIBLE_PLACE[WHITE].remove((7, 0))
 
     def action(self, turns):
-        print(self.phase, "turns: ",turns, "phase_turns: ", self.phase_turns)
         if self.phase == "placing":
             Best_Place = self.best_place()
             self.remove_from_possible_place(Best_Place)
@@ -60,15 +59,16 @@ class Player:
     def update(self, action):
         # adjust opponent's piece
         # if action is a nested tuple --> it is a 'move'; else --> it is a 'place'
-        enemy_color = 1 - self.color
-        self.update_turns()
-        if isinstance(action[0], tuple):
-            self.board.move_piece(action, enemy_color)
-        elif isinstance(action[0], int):
-            self.board.place_piece(action, enemy_color)
-            self.remove_from_possible_place(action)
-        else:
-            raise _InvalidActionException
+        if action:
+            enemy_color = 1 - self.color
+            self.update_turns()
+            # moving phase
+            if isinstance(action[0], tuple):
+                self.board.move_piece(action, enemy_color)
+            # placing phase
+            else:
+                self.board.place_piece(action, enemy_color)
+                self.remove_from_possible_place(action)
 
     def update_turns(self):
         self.phase_turns += 1
@@ -102,9 +102,11 @@ class Player:
         #         best_move = i
         # return root.children[best_move]
         Possible_Moves = self.board.possible_moves(self.color)
-        randomMove = random.randint(0, Possible_Moves.__len__())
-        return Possible_Moves[randomMove]
-        pass
+        if Possible_Moves is None:
+            return None
+        else:
+            randomMove = random.randint(0, Possible_Moves.__len__())
+            return Possible_Moves[randomMove]
 
 
     # Make decision of placing a piece, call Board.placePiece() function to update the board.
