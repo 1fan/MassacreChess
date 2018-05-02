@@ -34,7 +34,7 @@ def mul(tup, factor):
 # multiple two tuples
 def mul2list(list1, list2):
     result = []
-    for i in len(list1):
+    for i in range(len(list1)):
         result.append(list1[i] * list2[i])
     return result
 
@@ -57,10 +57,10 @@ def get_status(board, location):
 
 # check if given player can move a piece to this location from directions other than the given one
 def can_move_to(board, color, location, d):
-    directions = [[(0, -1), (0, 1)], [(-1, 0), (1, 0)]]
+    directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
     directions.remove(d)
     for direction in directions:
-        neighbor_location = add(location.location, direction)
+        neighbor_location = add(location, direction)
         neighbor_status = get_status(board, neighbor_location)
         if neighbor_status == color:
             return True

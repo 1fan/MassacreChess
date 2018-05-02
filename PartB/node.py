@@ -17,7 +17,7 @@ class Node(object):
             return INIT_BEST_VAL[self.depth % 2]
 
     def create_children(self):
-        if self.depth >= 0 and not self.board.game_ended():
+        if self.depth > 0 and not self.board.game_ended():
             for piece in self.board.Pieces[self.my_color]:
                 possible_moves = piece.possible_moves()
                 if possible_moves:
@@ -45,8 +45,8 @@ class Node(object):
     def get_e(self, turns):
         my_e = 0
         enemy_e = 0
-        for wf in mul2Tuple(self.board.weights, self.board.get_features(self.my_color, turns)):
+        for wf in mul2list(self.board.weights, self.board.get_features(self.my_color, turns)):
             my_e += wf
-        for wf in mul2Tuple(self.board.weights, self.board.get_features(1 - self.my_color, turns)):
+        for wf in mul2list(self.board.weights, self.board.get_features(1 - self.my_color, turns)):
             enemy_e += wf
         return my_e - enemy_e

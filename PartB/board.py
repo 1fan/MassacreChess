@@ -7,10 +7,12 @@ class Board:
     Initialize the Black/White list, store Piece instance in the list.
     Initialize weight for each features. Store each feature's value.
     '''
-    def __init__(self):
+    def __init__(self, Pieces=None):
         black = []
         white = []
         self.Pieces = [black, white]  # [black, white] list of Piece
+        if Pieces:
+            self.Pieces = Pieces
         self.Range = (0, 8) # location should be in this range to be inside the board
         self.Corner = [(0,0),(0,7),(7,7),(7,0)]
         self.weights = [1, 2, 3, 4, 5] # Should be set to reasonable values
@@ -18,7 +20,7 @@ class Board:
     # Return a tuple of all features' value
     def get_features(self, color, phase_turns):
         n_alive, n_danger, n_edge, n_safe, n_moves = 0, 0, 0, 0, 0
-        directions = [[(0, -1), (0, 1)], [(-1, 0), (1, 0)]]
+        directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
         enemy = 1 - color
         for piece in self.Pieces[color]:
             # Feature1: Left piece number of one color
@@ -57,6 +59,7 @@ class Board:
             if piece.location == action[0]:
                 piece.location = action[1]
         self.start_fight(action[1], color)
+        return self
         # Record features
 
     # Insert the piece into the list accordingly

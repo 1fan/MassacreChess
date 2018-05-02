@@ -2,6 +2,7 @@ from numpy import random
 from board import Board
 from judge import *
 from node import Node
+
 from referee import _InvalidActionException
 
 
@@ -86,6 +87,7 @@ class Player:
 
     # Make decision of move a piece
     def best_move(self):
+        # MINIMAX
         # depth_limit = 4  # must be even number for this implementation
         # root = Node(depth_limit, self.color, self.board, None)
         # # d%2 == 0 -> min's move -> +inf
@@ -101,6 +103,22 @@ class Player:
         #         best_val = val
         #         best_move = i
         # return root.children[best_move]
+
+        # EVALUATION
+        # Possible_Moves = self.board.possible_moves(self.color)
+        # max_e = -np.inf
+        # best_move = 0
+        # for i in range(len(Possible_Moves)):
+        #     new_board = Board(self.board.Pieces)
+        #     new_board.move_piece(Possible_Moves[i], self.color)
+        #     node = Node(0, self.color, new_board, None)
+        #     this_e = node.get_e(self.phase_turns)
+        #     if this_e > max_e:
+        #         max_e = this_e
+        #         best_move = i
+        # return Possible_Moves[best_move]
+
+        # RAMDOM
         Possible_Moves = self.board.possible_moves(self.color)
         if Possible_Moves is None:
             return None
@@ -109,8 +127,21 @@ class Player:
             return Possible_Moves[randomMove]
 
 
+
+
+
     # Make decision of placing a piece, call Board.placePiece() function to update the board.
     def best_place(self):
         randomPlace = random.randint(0,self.POSSIBLE_PLACE[self.color].__len__())
         return self.POSSIBLE_PLACE[self.color][randomPlace]
     #   return place. (,).
+
+        # Evaluation
+    def calculate_e(self):
+        my_e = 0
+        enemy_e = 0
+        for wf in mul2list(self.board.weights, self.board.get_features(self.color, self.phase_turns)):
+            my_e += wf
+        for wf in mul2list(self.board.weights, self.board.get_features(1 - self.color, self.phase_turns)):
+            enemy_e += wf
+        return my_e - enemy_e
