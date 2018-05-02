@@ -237,9 +237,9 @@ class Board:
         return possible_moves
 
     def game_ended(self):
-        if len(self.Pieces[BLACK]) == 0:
+        if len(self.Pieces[BLACK]) < 2:
             return True
-        if len(self.Pieces[WHITE]) == 0:
+        if len(self.Pieces[WHITE]) < 2:
             return True
         return False
 
