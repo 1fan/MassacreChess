@@ -43,9 +43,7 @@ def main():
         opponent.update(action)
         # other player's turn!
         player, opponent = opponent, player
-
     print(f'winner: {game.winner}!')
-
 
 # --------------------------------------------------------------------------- #
 

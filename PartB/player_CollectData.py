@@ -2,6 +2,8 @@ from numpy import random
 from board import Board
 from judge import *
 from node import Node
+import copy
+import operator
 
 from referee import _InvalidActionException
 
@@ -11,12 +13,14 @@ class Player:
     def __init__(self, colour):
         BLACK_POSSIBLE_PLACE = []
         WHITE_POSSIBLE_PLACE = []
+        self.FeatureValueResult = []
         self.POSSIBLE_PLACE = [BLACK_POSSIBLE_PLACE,WHITE_POSSIBLE_PLACE]
         match_color = {'black': 0, 'white': 1}
         self.color = match_color[colour]
         self.phase = "placing"
         self.phase_turns = 0
         self.board = Board()
+        self.new_board = Board()
         self.initLegalPlace()
 
     def initLegalPlace(self):
@@ -48,6 +52,8 @@ class Player:
 
             # Make the move on my board
             self.board.move_piece(Best_Move, self.color)
+            self.writeFile()
+            map(operator.add,self.FeatureValueResult, self.board.get_features(self.phase_turns, self.color))
             self.phase_turns += 1
 
             # shrink the board after my move
@@ -56,6 +62,17 @@ class Player:
                 self.board.shrink_board(turns)
 
             return Best_Move
+
+    def writeFile(self):
+        if self.board.game_ended() - 1 == self.color:
+            with open('data', 'w') as f:
+                f.write(str(self.FeatureValueResult) + "|" + '1')
+        elif self.board.game_ended() == 3:
+            with open('data', 'w') as f:
+                f.write(str(self.FeatureValueResult) + "|" + '0')
+        elif self.board.game_ended() - 1 == 1 - self.color:
+            with open('data', 'w') as f:
+                f.write(str(self.FeatureValueResult) + "|" + '-1')
 
     def update(self, action):
         # adjust opponent's piece
@@ -66,6 +83,7 @@ class Player:
             # moving phase
             if isinstance(action[0], tuple):
                 self.board.move_piece(action, enemy_color)
+                self.writeFile()
             # placing phase
             else:
                 self.board.place_piece(action, enemy_color)
@@ -105,26 +123,29 @@ class Player:
         # return root.children[best_move]
 
         # EVALUATION
-        # Possible_Moves = self.board.possible_moves(self.color)
-        # max_e = -np.inf
-        # best_move = 0
-        # for i in range(len(Possible_Moves)):
-        #     new_board = Board(self.board.Pieces)
-        #     new_board.move_piece(Possible_Moves[i], self.color)
-        #     node = Node(0, self.color, new_board, None)
-        #     this_e = node.get_e(self.phase_turns)
-        #     if this_e > max_e:
-        #         max_e = this_e
-        #         best_move = i
-        # return Possible_Moves[best_move]
+        Possible_Moves = self.board.possible_moves(self.color)
+        max_e = -np.inf
+        best_move = 0
+        for i in range(len(Possible_Moves)):
+            # new_Pieces = self.board.Pieces
+            self.new_board = copy.deepcopy(self.board)
+            # self.board.print_board()
+            self.new_board.move_piece(Possible_Moves[i], self.color)
+            # self.board.print_board()
+            node = Node(0, self.color, self.new_board, None)
+            this_e = node.get_e(self.phase_turns)
+            if this_e > max_e:
+                max_e = this_e
+                best_move = i
+        return Possible_Moves[best_move]
 
         # RAMDOM
-        Possible_Moves = self.board.possible_moves(self.color)
-        if Possible_Moves is None:
-            return None
-        else:
-            randomMove = random.randint(0, Possible_Moves.__len__())
-            return Possible_Moves[randomMove]
+        # Possible_Moves = self.board.possible_moves(self.color)
+        # if Possible_Moves is None:
+        #     return None
+        # else:
+        #     randomMove = random.randint(0, Possible_Moves.__len__())
+        #     return Possible_Moves[randomMove]
 
 
 
