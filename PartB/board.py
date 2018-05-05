@@ -1,6 +1,7 @@
 from referee import _InvalidActionException
 from piece import Piece
 from judge import *
+from copy import deepcopy
 
 class Board:
     '''
@@ -15,14 +16,15 @@ class Board:
             self.Pieces = Pieces
         self.Range = (0, 8) # location should be in this range to be inside the board
         self.Corner = [(0,0),(0,7),(7,7),(7,0)]
-        self.weights = [1, 2, 3, 4, 5] # Should be set to reasonable values
+        self.weights = [1, 1, 1, 0.2, 1] # Should be set to reasonable values
 
     # Return a tuple of all features' value
     def get_features(self, color, phase_turns):
         n_alive, n_danger, n_edge, n_safe, n_moves = 0, 0, 0, 0, 0
         directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
         enemy = 1 - color
-        for piece in self.Pieces[color]:
+        pieces = deepcopy(self.Pieces[color])
+        for piece in pieces:
             # Feature1: Left piece number of one color
             n_alive += 1
             # Feature5: number of pieces that could not be killed.
@@ -40,11 +42,11 @@ class Board:
                         # have empty spot
                         if other_neighbor_status == EMPTY and can_move_to(self, enemy, other_neighbor_location, d):
                             n_danger += 1
-                    # Feature3: The number of pieces that locate at edges.
-                    x, y = piece.location
-                    edges = self.Corner[1]
-                    if x in edges or y in edges:
-                        n_edge += 1
+            # Feature3: The number of pieces that locate at edges.
+            x, y = piece.location
+            edges = self.Corner[1]
+            if x in edges or y in edges:
+                n_edge += 1
         # Feature3:
         f_edge = get_f_edge(n_edge, phase_turns)
         # Feature4: number of total possible moves. return the number
@@ -94,33 +96,6 @@ class Board:
                 if other_neighbor_status == enemy or other_neighbor_status == CORNER:
                     self.eliminate(my_location, my_color)
                     break
-        '''
-        me_dead = False
-        directions = [[(0, -1), (0, 1)], [(-1, 0), (1, 0)]]
-        for dd in directions:
-            if me_dead:
-                break
-            for d in dd:
-                neighbor_location = add(my_location, d)
-                neighbor_status = get_status(self, neighbor_location)
-                # Neighbor is enemy
-                if neighbor_status == enemy:
-                    opposite_location = add(neighbor_location, d)
-                    opposite_status = get_status(self, opposite_location)
-                    # neighbor enemy is killed and check next dimension
-                    if opposite_status == friend or opposite_status == CORNER:
-                        self.eliminate(neighbor_location, enemy)
-                    # check the other neighbor enemy
-                    else:
-                        other_neighbor_location = add(my_location, mul(d, -1))
-                        other_neighbor_status = get_status(self, other_neighbor_location)
-                        # I am killed and stop the loop
-                        if other_neighbor_status == enemy or other_neighbor_status == CORNER:
-                            self.eliminate(my_location, my_color)
-                            me_dead = True
-                            break
-        '''
-
 
     # Eliminate a piece
     # Consider using list.indexof() and list.remove(index)
@@ -137,7 +112,6 @@ class Board:
             removed_pieces = []
             for piece in self.Pieces[color]:
                 x, y = piece.location
-
                 if (x in edges) and not (y in edges):
                     removed_pieces.append(piece.location)
                 if (y in edges) and not (x in edges):
@@ -160,7 +134,7 @@ class Board:
         self.Range = add(self.Range, (1, -1))
         if turns == 128:
             self.Corner = [(1, 1), (1, 6), (6, 6), (6, 1)]
-        elif turns == 196:
+        elif turns == 192:
             self.Corner = [(2, 2), (2, 5), (5, 5), (5, 2)]
 
         # add corner and eliminate its neighbor if possible
@@ -186,6 +160,7 @@ class Board:
             if removed_pieces[color]:
                 for location in removed_pieces[color]:
                     self.eliminate(location, color)
+        self.print_board()
 
 
     def get_dd(self, location):

@@ -5,6 +5,8 @@ from node import Node
 import copy
 import operator
 
+COLLECT_DATA = 0
+
 from referee import _InvalidActionException
 
 
@@ -52,9 +54,11 @@ class Player:
 
             # Make the move on my board
             self.board.move_piece(Best_Move, self.color)
-            self.writeFile()
-            map(operator.add,self.FeatureValueResult, self.board.get_features(self.phase_turns, self.color))
             self.phase_turns += 1
+            if COLLECT_DATA:
+                self.writeFile()
+                map(operator.add, self.FeatureValueResult, self.board.get_features(self.phase_turns, self.color))
+
 
             # shrink the board after my move
             turns += 1
@@ -83,7 +87,8 @@ class Player:
             # moving phase
             if isinstance(action[0], tuple):
                 self.board.move_piece(action, enemy_color)
-                self.writeFile()
+                if COLLECT_DATA:
+                    self.writeFile()
             # placing phase
             else:
                 self.board.place_piece(action, enemy_color)
@@ -106,50 +111,18 @@ class Player:
     # Make decision of move a piece
     def best_move(self):
         # MINIMAX
-        # depth_limit = 4  # must be even number for this implementation
-        # root = Node(depth_limit, self.color, self.board, None)
-        # # d%2 == 0 -> min's move -> +inf
-        # # d%2 == 1 -> max's move -> -inf
-        #
-        # best_val = root.children[0].value
-        # best_move = 0
-        # i = 0
-        # for child in root.children:
-        #     val = child.minmax(child, depth_limit - 1, self.phase_turns)
-        #     # update best value and move for min max
-        #     if ((child.depth % 2 == 0) and (val < best_val)) or ((child.depth % 2 == 1) and (val > best_val)):
-        #         best_val = val
-        #         best_move = i
-        # return root.children[best_move]
-
-        # EVALUATION
-        Possible_Moves = self.board.possible_moves(self.color)
-        max_e = -np.inf
+        depth_limit = 2  # must be even number for this implementation
+        this_board = copy.deepcopy(self.board)
+        root = Node(depth_limit, self.color, this_board, None, None)
+        best_val = -np.inf
         best_move = 0
-        for i in range(len(Possible_Moves)):
-            # new_Pieces = self.board.Pieces
-            self.new_board = copy.deepcopy(self.board)
-            # self.board.print_board()
-            self.new_board.move_piece(Possible_Moves[i], self.color)
-            # self.board.print_board()
-            node = Node(0, self.color, self.new_board, None)
-            this_e = node.get_e(self.phase_turns)
-            if this_e > max_e:
-                max_e = this_e
-                best_move = i
-        return Possible_Moves[best_move]
-
-        # RAMDOM
-        # Possible_Moves = self.board.possible_moves(self.color)
-        # if Possible_Moves is None:
-        #     return None
-        # else:
-        #     randomMove = random.randint(0, Possible_Moves.__len__())
-        #     return Possible_Moves[randomMove]
-
-
-
-
+        for child in root.children:
+            val = child.minmax(child, depth_limit - 1, self.phase_turns + 1)
+            # update best value and move for min max
+            if val > best_val:
+                best_val = val
+                best_move = child
+        return best_move.action
 
     # Make decision of placing a piece, call Board.placePiece() function to update the board.
     def best_place(self):

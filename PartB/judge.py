@@ -2,7 +2,7 @@
 import numpy as np
 
 EMPTY, BLACK, WHITE, CORNER, OUTSIDE = -1, 0, 1, 2, 3
-INIT_BEST_VAL = [+np.inf, -np.inf]
+INIT_BEST_VAL = [-np.inf, +np.inf]
 
 
 

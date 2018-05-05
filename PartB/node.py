@@ -1,12 +1,13 @@
 from judge import *
-
+from copy import deepcopy
 
 class Node(object):
-    def __init__(self, depth, my_color, board, value):
+    def __init__(self, depth, my_color, board, value, action):
         self.depth = depth
         self.my_color = my_color
         self.board = board
         self.value = self.get_value(value)
+        self.action = action
         self.children = []
         self.create_children()
 
@@ -18,26 +19,28 @@ class Node(object):
 
     def create_children(self):
         if self.depth > 0 and not self.board.game_ended():
-            for piece in self.board.Pieces[self.my_color]:
-                possible_moves = piece.possible_moves()
-                if possible_moves:
-                    for move in possible_moves:
-                        self.children.append(Node(self.depth - 1,
-                                                  1 - self.my_color,  # invert between 0(black) and 1(white)
-                                                  self.board.move_piece(move, self.my_color),
-                                                  (-1)*self.value))
+            possible_moves = self.board.possible_moves(self.my_color)
+            if possible_moves:
+                for move in possible_moves:
+                    child_board = deepcopy(self.board)
+                    child_board.move_piece(move, self.my_color)
+                    self.children.append(Node(self.depth - 1,
+                                              1 - self.my_color,  # invert between 0(black) and 1(white)
+                                              child_board,
+                                              (-1) * self.value,
+                                              move))
 
     def minmax(self, node, depth_limit, turns):
-        if (depth_limit == 0) or (node.board.check_win()):
-            return self.get_e(turns)
+        if (depth_limit == 0) or (node.board.game_ended()):
+            return node.get_e(turns)
 
-        # d%2 == 0 -> min's move -> +inf
-        # d%2 == 1 -> max's move -> -inf
+        # d%2 == 0 -> max -> -inf
+        # d%2 == 1 -> min -> +inf
         best_val = INIT_BEST_VAL[node.depth % 2]
         for child in node.children:
             val = self.minmax(child, depth_limit - 1, turns)
             # update best for min max
-            if ((node.depth % 2 == 0) and (val < best_val)) or ((node.depth % 2 == 1) and (val > best_val)):
+            if ((node.depth % 2 == 0) and (val > best_val)) or ((node.depth % 2 == 1) and (val < best_val)):
                 best_val = val
         return best_val
 
