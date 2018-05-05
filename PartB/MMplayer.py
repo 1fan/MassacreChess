@@ -57,7 +57,7 @@ class Player:
             self.phase_turns += 1
             if COLLECT_DATA:
                 self.writeFile()
-                map(operator.add, self.FeatureValueResult, self.board.get_features(self.phase_turns, self.color))
+                map(operator.add, self.FeatureValueResult, self.board.get_features(self.color, self.phase_turns))
 
 
             # shrink the board after my move
@@ -126,9 +126,26 @@ class Player:
 
     # Make decision of placing a piece, call Board.placePiece() function to update the board.
     def best_place(self):
+        # EVALUATION
+        # Possible_Places = self.POSSIBLE_PLACE[self.color]
+        # max_e = -np.inf
+        # best_place = 0
+        # for i in range(len(Possible_Places)):
+        #     # new_Pieces = self.board.Pieces
+        #     self.new_board = copy.deepcopy(self.board)
+        #     # self.board.print_board()
+        #     self.new_board.place_piece(Possible_Places[i], self.color)
+        #     # self.board.print_board()
+        #     node = Node(0, self.color, self.new_board, None, None)
+        #     # should have a different feature function
+        #     this_e = node.get_e(self.phase_turns)
+        #     if this_e > max_e:
+        #         max_e = this_e
+        #         best_place = i
+        # return Possible_Places[best_place]
+
         randomPlace = random.randint(0,self.POSSIBLE_PLACE[self.color].__len__())
         return self.POSSIBLE_PLACE[self.color][randomPlace]
-    #   return place. (,).
 
         # Evaluation
     def calculate_e(self):

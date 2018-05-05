@@ -8,12 +8,10 @@ class Board:
     Initialize the Black/White list, store Piece instance in the list.
     Initialize weight for each features. Store each feature's value.
     '''
-    def __init__(self, Pieces=None):
+    def __init__(self):
         black = []
         white = []
         self.Pieces = [black, white]  # [black, white] list of Piece
-        if Pieces:
-            self.Pieces = Pieces
         self.Range = (0, 8) # location should be in this range to be inside the board
         self.Corner = [(0,0),(0,7),(7,7),(7,0)]
         self.weights = [1, 1, 1, 0.2, 1] # Should be set to reasonable values
@@ -218,56 +216,3 @@ class Board:
             return 2
 
         return 0
-
-'''
-    def Alive_Piece_Number(self, color):
-        return self.Pieces[color].__len__()
-
-    # Feature2: The number of pieces that could be killed in 1 move. Return the number.
-    def Dangerous_Piece_Number(self, color):
-        n = 0
-        directions = [[(0, -1), (0, 1)], [(-1, 0), (1, 0)]]
-        enemy = 1 - color
-        for piece in self.Pieces[color]:
-            for d in directions:
-                neighbor_location = add(piece.location, d)
-                neighbor_status = get_status(self, neighbor_location)
-                # Neighbor is empty
-                if neighbor_status == enemy or neighbor_status == CORNER:
-                    other_neighbor_location = add(piece.location, mul(d, -1))
-                    other_neighbor_status = get_status(self, other_neighbor_location)
-                    # have empty spot
-                    if other_neighbor_status == EMPTY and can_move_to(self, enemy, other_neighbor_location, d):
-                        n += 1
-                        break
-        return n
-
-    # Feature3: The number of pieces that locate at edges.
-    # if phase_turns<128 : return numbers*phase_turns/128, if 128<phase_turns<196 , return number*(phase_turns-128)/(196-128)
-    # if phase_turns>196, return the number.
-    def Eedge_Piece_Number(self, color, phase_turns):
-        n = 0
-        for piece in self.Pieces[color]:
-            x, y = piece.location
-            edges = self.Corner[1]
-            if x in edges or y in edges:
-                n += 1
-        if phase_turns < 128:
-            return n * phase_turns / 128.0
-        if phase_turns > 196:
-            return n
-        else:
-            return n * (phase_turns - 128) / (196 - 128)
-
-    # Feature4: number of total possible moves. return the number
-    def Total_Possible_Moves(self, color):
-        return len(self.possibleMoves(color))
-
-    # Feature5: number of pieces that could not be killed.
-    def Safe_Piece_Number(self, color):
-        n = 0
-        for piece in self.Pieces[color]:
-            if is_safe(self,color,piece.location):
-                n += 1
-        return n
-'''
