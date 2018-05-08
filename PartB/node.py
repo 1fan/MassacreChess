@@ -48,8 +48,12 @@ class Node(object):
     def get_e(self, turns):
         my_e = 0
         enemy_e = 0
-        for wf in mul2list(self.board.weights, self.board.get_features(self.my_color, turns)):
+        if turns == -1:
+            weights = [1, 0.5, 0.5]
+        else:
+            weights = [1, 0.5, 0.5, 0.2, 0.5]
+        for wf in mul2list(weights, self.board.get_features(self.my_color, turns)):
             my_e += wf
-        for wf in mul2list(self.board.weights, self.board.get_features(1 - self.my_color, turns)):
+        for wf in mul2list(weights, self.board.get_features(1 - self.my_color, turns)):
             enemy_e += wf
         return my_e - enemy_e

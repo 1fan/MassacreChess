@@ -14,7 +14,6 @@ class Board:
         self.Pieces = [black, white]  # [black, white] list of Piece
         self.Range = (0, 8) # location should be in this range to be inside the board
         self.Corner = [(0,0),(0,7),(7,7),(7,0)]
-        self.weights = [1, 0.5, 0.5, 0.2, 0.5] # Should be set to reasonable values
 
     # Return a tuple of all features' value
     def get_features(self, color, phase_turns):
@@ -48,13 +47,13 @@ class Board:
                 edges = self.Corner[1]
                 if x in edges or y in edges:
                     n_edge += 1
-        # Feature3:
-        f_moves, f_edge = 0, 0
-        if phase_turns != -1:
+
+        if phase_turns == -1:
+            return [n_alive, -n_danger, n_safe]
+        else:
             f_edge = get_f_edge(n_edge, phase_turns)
-        # Feature4: number of total possible moves. return the number
             f_moves = len(self.possible_moves(color))
-        return [n_alive, -n_danger, -f_edge, f_moves, n_safe]
+            return [n_alive, -n_danger, -f_edge, f_moves, n_safe]
 
     # Make a move. move: ((x0,y0),(x1,y1))
     # Consider to change into list.indexof method
