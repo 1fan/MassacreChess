@@ -56,7 +56,7 @@ class Player:
             self.phase_turns += 1
             if COLLECT_DATA:
                 self.writeFile()
-                map(operator.add, self.FeatureValueResult, self.board.get_features(self.phase_turns, self.color))
+
             # shrink the board after my move
             if self.phase_turns in [128, 192]:
                 self.board.shrink_board(self.phase_turns)
@@ -64,15 +64,18 @@ class Player:
             return Best_Move
 
     def writeFile(self):
-        if self.board.game_ended() - 1 == self.color:
-            with open('data', 'weight') as f:
-                f.write(str(self.FeatureValueResult) + "|" + '1')
-        elif self.board.game_ended() == 3:
-            with open('data', 'weight') as f:
-                f.write(str(self.FeatureValueResult) + "|" + '0')
-        elif self.board.game_ended() - 1 == 1 - self.color:
-            with open('data', 'weight') as f:
-                f.write(str(self.FeatureValueResult) + "|" + '-1')
+        map(operator.add, self.FeatureValueResult, self.board.get_features(self.phase_turns, self.color))
+        if self.board.game_ended():
+            FinalFeatureResult = [x / self.phase_turns for x in self.FeatureValueResult]
+            if self.board.game_ended() - 1 == self.color:
+                with open('data', 'weight') as f:
+                    f.write(str(FinalFeatureResult) + "|" + '1')
+            elif self.board.game_ended() == 3:
+                with open('data', 'weight') as f:
+                    f.write(str(FinalFeatureResult) + "|" + '0')
+            elif self.board.game_ended() - 1 == 1 - self.color:
+                with open('data', 'weight') as f:
+                    f.write(str(FinalFeatureResult) + "|" + '-1')
 
     def update(self, action):
         # adjust opponent's piece
