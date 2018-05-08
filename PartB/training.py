@@ -62,6 +62,9 @@ with tf.Session() as sess:
     # Plot weight history
     for i in range(len(weight_history)):
         plt.plot(weight_history[i])
-    print('final w', sess.run(W, {f: F, t: T}))
+    Weights = sess.run(W, {f: F, t: T})
+    for w in Weights:
+        w = w / Weights[0]
+    print('final w', Weights)
     plt.show()
     sess.close()

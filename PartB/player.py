@@ -65,13 +65,13 @@ class Player:
 
     def writeFile(self):
         if self.board.game_ended() - 1 == self.color:
-            with open('data', 'w') as f:
+            with open('data', 'weight') as f:
                 f.write(str(self.FeatureValueResult) + "|" + '1')
         elif self.board.game_ended() == 3:
-            with open('data', 'w') as f:
+            with open('data', 'weight') as f:
                 f.write(str(self.FeatureValueResult) + "|" + '0')
         elif self.board.game_ended() - 1 == 1 - self.color:
-            with open('data', 'w') as f:
+            with open('data', 'weight') as f:
                 f.write(str(self.FeatureValueResult) + "|" + '-1')
 
     def update(self, action):
