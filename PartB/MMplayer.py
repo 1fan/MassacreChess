@@ -1,22 +1,21 @@
 from numpy import random
 from board import Board
 from judge import *
+import operator
 from node import Node
-import operator
 import copy
-import operator
-
-COLLECT_DATA = 1
 
 from referee import _InvalidActionException
 
+COLLECT_MOVING = 1
+COLLECT_PLACING = 0
 
 class Player:
     # initialize: phase_turns, board, phase, color:BLACK, WHITE = 0, 1
     def __init__(self, colour):
         BLACK_POSSIBLE_PLACE = []
         WHITE_POSSIBLE_PLACE = []
-        self.POSSIBLE_PLACE = [BLACK_POSSIBLE_PLACE, WHITE_POSSIBLE_PLACE]
+        self.POSSIBLE_PLACE = [BLACK_POSSIBLE_PLACE,WHITE_POSSIBLE_PLACE]
         match_color = {'black': 0, 'white': 1}
         self.color = match_color[colour]
         self.phase = "placing"
@@ -26,6 +25,7 @@ class Player:
         self.initLegalPlace()
         self.FeatureValueResult = []
         self.initFeature()
+
 
     def initFeature(self):
         if COLLECT_MOVING:
@@ -51,6 +51,8 @@ class Player:
             self.remove_from_possible_place(Best_Place)
             self.board.place_piece(Best_Place, self.color)
             self.update_turns()
+            if COLLECT_PLACING:
+                self.writeFile()
             return Best_Place
 
         if self.phase == "moving":
@@ -63,7 +65,7 @@ class Player:
             # Make the move on my board
             self.board.move_piece(Best_Move, self.color)
             self.phase_turns += 1
-            if COLLECT_DATA:
+            if COLLECT_MOVING:
                 self.writeFile()
 
             # shrink the board after my move
@@ -71,17 +73,6 @@ class Player:
                 self.board.shrink_board(self.phase_turns)
 
             return Best_Move
-
-    def writeFile(self):
-        if self.board.game_ended() - 1 == self.color:
-            with open('data', 'weight') as f:
-                f.write(str(self.FeatureValueResult) + "|" + '1')
-        elif self.board.game_ended() == 3:
-            with open('data', 'weight') as f:
-                f.write(str(self.FeatureValueResult) + "|" + '0')
-        elif self.board.game_ended() - 1 == 1 - self.color:
-            with open('data', 'weight') as f:
-                f.write(str(self.FeatureValueResult) + "|" + '-1')
 
     def update(self, action):
         # adjust opponent's piece
@@ -92,8 +83,6 @@ class Player:
             # moving phase
             if isinstance(action[0], tuple):
                 self.board.move_piece(action, enemy_color)
-                if COLLECT_DATA:
-                    self.writeFile()
             # placing phase
             else:
                 self.board.place_piece(action, enemy_color)
@@ -113,6 +102,39 @@ class Player:
         if r in range(0, 6):
             self.POSSIBLE_PLACE[WHITE].remove(location)
 
+    # Make decision of move a piece
+
+
+        # Evaluation
+    def calculate_e(self):
+        my_e = 0
+        enemy_e = 0
+        for wf in mul2list(self.board.weights, self.board.get_features(self.color, self.phase_turns)):
+            my_e += wf
+        for wf in mul2list(self.board.weights, self.board.get_features(1 - self.color, self.phase_turns)):
+            enemy_e += wf
+        return my_e - enemy_e
+
+    def writeFile(self):
+        self.FeatureValueResult = add2list(self.FeatureValueResult, self.board.get_features(self.color, self.phase_turns))
+        print("-----------------------------------------------", self.FeatureValueResult)
+        if self.board.game_ended():
+            print("game ended")
+            FinalFeatureResult = [x / self.phase_turns for x in self.FeatureValueResult]
+
+            if self.board.game_ended() - 1 == self.color:
+                print(self.color, "win")
+
+                with open('data.txt', 'a') as f:
+                    f.write(str(FinalFeatureResult) + "|" + '1')
+            elif self.board.game_ended() == 3:
+                print("tie")
+                with open('data.txt', 'a') as f:
+                    f.write(str(FinalFeatureResult) + "|" + '0')
+            elif self.board.game_ended() - 1 == 1 - self.color:
+                print(self.color, "lose")
+                with open('data.txt', 'a') as f:
+                    f.write(str(FinalFeatureResult) + "|" + '-1')
     # Make decision of move a piece
     def best_move(self):
         # MINIMAX
@@ -134,30 +156,20 @@ class Player:
     # Make decision of placing a piece, call Board.placePiece() function to update the board.
     def best_place(self):
         #EVALUATION
-        Possible_Places = self.POSSIBLE_PLACE[self.color]
-        max_e = -np.inf
-        best_place = 0
-        for i in range(len(Possible_Places)):
-            # new_Pieces = self.board.Pieces
-            new_board = copy.deepcopy(self.board)
-            new_board.place_piece(Possible_Places[i], self.color)
-            node = Node(0, self.color, new_board, None, None)
-            # should have a different feature function
-            this_e = node.get_e(-1)
-            if this_e > max_e:
-                max_e = this_e
-                best_place = i
-        return Possible_Places[best_place]
+        # Possible_Places = self.POSSIBLE_PLACE[self.color]
+        # max_e = -np.inf
+        # best_place = 0
+        # for i in range(len(Possible_Places)):
+        #     # new_Pieces = self.board.Pieces
+        #     new_board = copy.deepcopy(self.board)
+        #     new_board.place_piece(Possible_Places[i], self.color)
+        #     node = Node(0, self.color, new_board, None, None)
+        #     # should have a different feature function
+        #     this_e = node.get_e(-1)
+        #     if this_e > max_e:
+        #         max_e = this_e
+        #         best_place = i
+        # return Possible_Places[best_place]
 
-        # randomPlace = random.randint(0,self.POSSIBLE_PLACE[self.color].__len__())
-        # return self.POSSIBLE_PLACE[self.color][randomPlace]
-
-        # Evaluation
-    def calculate_e(self):
-        my_e = 0
-        enemy_e = 0
-        for wf in mul2list(self.board.weights, self.board.get_features(self.color, self.phase_turns)):
-            my_e += wf
-        for wf in mul2list(self.board.weights, self.board.get_features(1 - self.color, self.phase_turns)):
-            enemy_e += wf
-        return my_e - enemy_e
+        randomPlace = random.randint(0, self.POSSIBLE_PLACE[self.color].__len__())
+        return self.POSSIBLE_PLACE[self.color][randomPlace]

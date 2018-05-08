@@ -103,24 +103,7 @@ class Player:
             self.POSSIBLE_PLACE[WHITE].remove(location)
 
     # Make decision of move a piece
-    def best_move(self):
-        # RAMDOM
-        Possible_Moves = self.board.possible_moves(self.color)
-        if Possible_Moves is None:
-            return None
-        else:
-            randomMove = random.randint(0, Possible_Moves.__len__())
-            return Possible_Moves[randomMove]
 
-
-
-
-
-    # Make decision of placing a piece, call Board.placePiece() function to update the board.
-    def best_place(self):
-        randomPlace = random.randint(0,self.POSSIBLE_PLACE[self.color].__len__())
-        return self.POSSIBLE_PLACE[self.color][randomPlace]
-    #   return place. (,).
 
         # Evaluation
     def calculate_e(self):
@@ -152,3 +135,18 @@ class Player:
                 print(self.color, "lose")
                 with open('data.txt', 'a') as f:
                     f.write(str(FinalFeatureResult) + "|" + '-1')
+
+    def best_move(self):
+        # RAMDOM
+        Possible_Moves = self.board.possible_moves(self.color)
+        if Possible_Moves is None:
+            return None
+        else:
+            randomMove = random.randint(0, Possible_Moves.__len__())
+            return Possible_Moves[randomMove]
+
+    # Make decision of placing a piece, call Board.placePiece() function to update the board.
+    def best_place(self):
+        randomPlace = random.randint(0,self.POSSIBLE_PLACE[self.color].__len__())
+        return self.POSSIBLE_PLACE[self.color][randomPlace]
+    #   return place. (,).
