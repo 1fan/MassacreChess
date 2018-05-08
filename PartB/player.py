@@ -5,7 +5,7 @@ from node import Node
 import copy
 import operator
 
-COLLECT_DATA = 0
+COLLECT_DATA = 1
 
 from referee import _InvalidActionException
 
@@ -15,14 +15,22 @@ class Player:
     def __init__(self, colour):
         BLACK_POSSIBLE_PLACE = []
         WHITE_POSSIBLE_PLACE = []
-        self.FeatureValueResult = []
-        self.POSSIBLE_PLACE = [BLACK_POSSIBLE_PLACE,WHITE_POSSIBLE_PLACE]
+        self.POSSIBLE_PLACE = [BLACK_POSSIBLE_PLACE, WHITE_POSSIBLE_PLACE]
         match_color = {'black': 0, 'white': 1}
         self.color = match_color[colour]
         self.phase = "placing"
         self.phase_turns = 0
         self.board = Board()
+        self.new_board = Board()
         self.initLegalPlace()
+        self.FeatureValueResult = []
+        self.initFeature()
+
+    def initFeature(self):
+        if COLLECT_MOVING:
+            self.FeatureValueResult = [0, 0, 0, 0, 0]
+        else:
+            self.FeatureValueResult = [0, 0, 0]
 
     def initLegalPlace(self):
         for c in range(0,8):
@@ -68,13 +76,13 @@ class Player:
         if self.board.game_ended():
             FinalFeatureResult = [x / self.phase_turns for x in self.FeatureValueResult]
             if self.board.game_ended() - 1 == self.color:
-                with open('data', 'weight') as f:
+                with open('C:/Users/thinkpad/Documents/Git/AI_Project/PartB/data.txt', 'w') as f:
                     f.write(str(FinalFeatureResult) + "|" + '1')
             elif self.board.game_ended() == 3:
-                with open('data', 'weight') as f:
+                with open('C:/Users/thinkpad/Documents/Git/AI_Project/PartB/data.txt', 'w') as f:
                     f.write(str(FinalFeatureResult) + "|" + '0')
             elif self.board.game_ended() - 1 == 1 - self.color:
-                with open('data', 'weight') as f:
+                with open('C:/Users/thinkpad/Documents/Git/AI_Project/PartB/data.txt', 'w') as f:
                     f.write(str(FinalFeatureResult) + "|" + '-1')
 
     def update(self, action):

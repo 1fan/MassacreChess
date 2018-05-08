@@ -25,6 +25,12 @@ def add(tup1, tup2):
     x2, y2 = tup2
     return (x1+x2, y1+y2)
 
+def add2list(list1, list2):
+    result = []
+    for i in range(len(list1)):
+        result.append(list1[i] + list2[i])
+    return result
+
 
 def mul(tup, factor):
     x, y = tup

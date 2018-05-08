@@ -2,10 +2,11 @@ from numpy import random
 from board import Board
 from judge import *
 from node import Node
+import operator
 import copy
 import operator
 
-COLLECT_DATA = 0
+COLLECT_DATA = 1
 
 from referee import _InvalidActionException
 
@@ -15,8 +16,7 @@ class Player:
     def __init__(self, colour):
         BLACK_POSSIBLE_PLACE = []
         WHITE_POSSIBLE_PLACE = []
-        self.FeatureValueResult = []
-        self.POSSIBLE_PLACE = [BLACK_POSSIBLE_PLACE,WHITE_POSSIBLE_PLACE]
+        self.POSSIBLE_PLACE = [BLACK_POSSIBLE_PLACE, WHITE_POSSIBLE_PLACE]
         match_color = {'black': 0, 'white': 1}
         self.color = match_color[colour]
         self.phase = "placing"
@@ -24,6 +24,14 @@ class Player:
         self.board = Board()
         self.new_board = Board()
         self.initLegalPlace()
+        self.FeatureValueResult = []
+        self.initFeature()
+
+    def initFeature(self):
+        if COLLECT_MOVING:
+            self.FeatureValueResult = [0, 0, 0, 0, 0]
+        else:
+            self.FeatureValueResult = [0, 0, 0]
 
     def initLegalPlace(self):
         for c in range(0,8):
@@ -47,8 +55,8 @@ class Player:
 
         if self.phase == "moving":
             # shrink the board before my move
-            if turns in [128, 192]:
-                self.board.shrink_board(turns)
+            if self.phase_turns in [128, 192]:
+                self.board.shrink_board(self.phase_turns)
             # Give a best move
             Best_Move = self.best_move()
 
@@ -57,13 +65,10 @@ class Player:
             self.phase_turns += 1
             if COLLECT_DATA:
                 self.writeFile()
-                map(operator.add, self.FeatureValueResult, self.board.get_features(self.color, self.phase_turns))
-
 
             # shrink the board after my move
-            turns += 1
-            if turns in [128, 192]:
-                self.board.shrink_board(turns)
+            if self.phase_turns in [128, 192]:
+                self.board.shrink_board(self.phase_turns)
 
             return Best_Move
 

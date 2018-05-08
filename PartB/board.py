@@ -159,11 +159,9 @@ class Board:
                 if neighbor_status + opposite_status == 1:  # status can only be EMPTY(-1) BLACK(0) WHITE(1)
                     removed_pieces[neighbor_status].append(neighbor_location)
         for color in [0, 1]:
-            print(removed_pieces[color])
             if removed_pieces[color]:
                 for location in removed_pieces[color]:
                     self.eliminate(location, color)
-        self.print_board()
 
 
     def get_dd(self, location):

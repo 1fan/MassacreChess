@@ -1,11 +1,14 @@
 from numpy import random
 from board import Board
 from judge import *
+import operator
 from node import Node
 import copy
 
 from referee import _InvalidActionException
 
+COLLECT_MOVING = 1
+COLLECT_PLACING = 0
 
 class Player:
     # initialize: phase_turns, board, phase, color:BLACK, WHITE = 0, 1
@@ -20,6 +23,15 @@ class Player:
         self.board = Board()
         self.new_board = Board()
         self.initLegalPlace()
+        self.FeatureValueResult = []
+        self.initFeature()
+
+
+    def initFeature(self):
+        if COLLECT_MOVING:
+            self.FeatureValueResult = [0, 0, 0, 0, 0]
+        else:
+            self.FeatureValueResult = [0, 0, 0]
 
     def initLegalPlace(self):
         for c in range(0,8):
@@ -39,23 +51,26 @@ class Player:
             self.remove_from_possible_place(Best_Place)
             self.board.place_piece(Best_Place, self.color)
             self.update_turns()
+            if COLLECT_PLACING:
+                self.writeFile()
             return Best_Place
 
         if self.phase == "moving":
             # shrink the board before my move
-            if turns in [128, 192]:
-                self.board.shrink_board(turns)
+            if self.phase_turns in [128, 192]:
+                self.board.shrink_board(self.phase_turns)
             # Give a best move
             Best_Move = self.best_move()
 
             # Make the move on my board
             self.board.move_piece(Best_Move, self.color)
             self.phase_turns += 1
+            if COLLECT_MOVING:
+                self.writeFile()
 
             # shrink the board after my move
-            turns += 1
-            if turns in [128, 192]:
-                self.board.shrink_board(turns)
+            if self.phase_turns in [128, 192]:
+                self.board.shrink_board(self.phase_turns)
 
             return Best_Move
 
@@ -116,3 +131,24 @@ class Player:
         for wf in mul2list(self.board.weights, self.board.get_features(1 - self.color, self.phase_turns)):
             enemy_e += wf
         return my_e - enemy_e
+
+    def writeFile(self):
+        self.FeatureValueResult = add2list(self.FeatureValueResult, self.board.get_features(self.color, self.phase_turns))
+        print("-----------------------------------------------", self.FeatureValueResult)
+        if self.board.game_ended():
+            print("game ended")
+            FinalFeatureResult = [x / self.phase_turns for x in self.FeatureValueResult]
+
+            if self.board.game_ended() - 1 == self.color:
+                print(self.color, "win")
+
+                with open('data.txt', 'a') as f:
+                    f.write(str(FinalFeatureResult) + "|" + '1')
+            elif self.board.game_ended() == 3:
+                print("tie")
+                with open('data.txt', 'a') as f:
+                    f.write(str(FinalFeatureResult) + "|" + '0')
+            elif self.board.game_ended() - 1 == 1 - self.color:
+                print(self.color, "lose")
+                with open('data.txt', 'a') as f:
+                    f.write(str(FinalFeatureResult) + "|" + '-1')
