@@ -1,0 +1,9 @@
+features
+agents(random, evaluation, minimax)
+machine learning:
+	training data (order, choice of utility)
+	learning (scale shuffle)
+	adjust weight
+Improvements:
+	placing
+	size of board - depth of tree

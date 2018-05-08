@@ -22,7 +22,6 @@ class Player:
         self.phase = "placing"
         self.phase_turns = 0
         self.board = Board()
-        self.new_board = Board()
         self.initLegalPlace()
 
     def initLegalPlace(self):
@@ -47,8 +46,8 @@ class Player:
 
         if self.phase == "moving":
             # shrink the board before my move
-            if turns in [128, 196]:
-                self.board.shrink_board(turns)
+            if self.phase_turns in [128, 192]:
+                self.board.shrink_board(self.phase_turns)
             # Give a best move
             Best_Move = self.best_move()
 
@@ -58,12 +57,9 @@ class Player:
             if COLLECT_DATA:
                 self.writeFile()
                 map(operator.add, self.FeatureValueResult, self.board.get_features(self.phase_turns, self.color))
-
-
             # shrink the board after my move
-            turns += 1
-            if turns in [128, 196]:
-                self.board.shrink_board(turns)
+            if self.phase_turns in [128, 192]:
+                self.board.shrink_board(self.phase_turns)
 
             return Best_Move
 
@@ -115,12 +111,9 @@ class Player:
         max_e = -np.inf
         best_move = 0
         for i in range(len(Possible_Moves)):
-            # new_Pieces = self.board.Pieces
-            self.new_board = copy.deepcopy(self.board)
-            # self.board.print_board()
-            self.new_board.move_piece(Possible_Moves[i], self.color)
-            # self.board.print_board()
-            node = Node(0, self.color, self.new_board, None, None)
+            new_board = copy.deepcopy(self.board)
+            new_board.move_piece(Possible_Moves[i], self.color)
+            node = Node(0, self.color, new_board, None, None)
             this_e = node.get_e(self.phase_turns)
             if this_e > max_e:
                 max_e = this_e

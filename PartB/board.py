@@ -14,14 +14,14 @@ class Board:
         self.Pieces = [black, white]  # [black, white] list of Piece
         self.Range = (0, 8) # location should be in this range to be inside the board
         self.Corner = [(0,0),(0,7),(7,7),(7,0)]
-        self.weights = [1, 1, 1, 0.2, 1] # Should be set to reasonable values
+        self.weights = [1, 0.5, 0.5, 0.2, 0.5] # Should be set to reasonable values
 
     # Return a tuple of all features' value
     def get_features(self, color, phase_turns):
         n_alive, n_danger, n_edge, n_safe, n_moves = 0, 0, 0, 0, 0
         directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
         enemy = 1 - color
-        pieces = deepcopy(self.Pieces[color])
+        pieces = self.Pieces[color]
         for piece in pieces:
             # Feature1: Left piece number of one color
             n_alive += 1
@@ -38,17 +38,22 @@ class Board:
                         other_neighbor_location = add(piece.location, mul(d, -1))
                         other_neighbor_status = get_status(self, other_neighbor_location)
                         # have empty spot
-                        if other_neighbor_status == EMPTY and can_move_to(self, enemy, other_neighbor_location, d):
-                            n_danger += 1
-            # Feature3: The number of pieces that locate at edges.
-            x, y = piece.location
-            edges = self.Corner[1]
-            if x in edges or y in edges:
-                n_edge += 1
+                        if other_neighbor_status == EMPTY:
+                            # PLACING or MOVING
+                            if phase_turns == -1 or can_move_to(self, enemy, other_neighbor_location, d):
+                                n_danger += 1
+            # Feature3: The number of pieces that locate at edges.(MOVING only)
+            if phase_turns != -1:
+                x, y = piece.location
+                edges = self.Corner[1]
+                if x in edges or y in edges:
+                    n_edge += 1
         # Feature3:
-        f_edge = get_f_edge(n_edge, phase_turns)
+        f_moves, f_edge = 0, 0
+        if phase_turns != -1:
+            f_edge = get_f_edge(n_edge, phase_turns)
         # Feature4: number of total possible moves. return the number
-        f_moves = len(self.possible_moves(color))
+            f_moves = len(self.possible_moves(color))
         return [n_alive, -n_danger, -f_edge, f_moves, n_safe]
 
     # Make a move. move: ((x0,y0),(x1,y1))
@@ -155,6 +160,7 @@ class Board:
                 if neighbor_status + opposite_status == 1:  # status can only be EMPTY(-1) BLACK(0) WHITE(1)
                     removed_pieces[neighbor_status].append(neighbor_location)
         for color in [0, 1]:
+            print(removed_pieces[color])
             if removed_pieces[color]:
                 for location in removed_pieces[color]:
                     self.eliminate(location, color)
