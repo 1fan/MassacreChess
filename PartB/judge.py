@@ -89,11 +89,11 @@ def is_safe(board, color, location):
 
 def get_f_edge(n, turns):
     if turns < 128:
-        return n * turns / 128.0
-    if turns > 196:
-        return n
+        return n * (turns / 128.0) * (turns / 128.0)
+    if turns > 192:
+        return 0
     else:
-        return n * (turns - 128) / (196 - 128)
+        return n * ((turns - 128) / (192 - 128)) * ((turns - 128) / (192 - 128))
 
 
 

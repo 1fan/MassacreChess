@@ -2,20 +2,17 @@ from judge import *
 from copy import deepcopy
 
 class Node(object):
-    def __init__(self, depth, my_color, board, value, action):
+    def __init__(self, depth, my_color, board, action, max_color):
         self.depth = depth
         self.my_color = my_color
         self.board = board
-        self.value = self.get_value(value)
+        self.value = None
         self.action = action
         self.children = []
+        self.max_color = max_color
         self.create_children()
 
-    def get_value(self, value):
-        if value:
-            return value
-        else:
-            return INIT_BEST_VAL[self.depth % 2]
+
 
     def create_children(self):
         if self.depth > 0 and not self.board.game_ended():
@@ -27,16 +24,16 @@ class Node(object):
                     self.children.append(Node(self.depth - 1,
                                               1 - self.my_color,  # invert between 0(black) and 1(white)
                                               child_board,
-                                              (-1) * self.value,
-                                              move))
+                                              move,
+                                              self.max_color))
 
     def minmax(self, node, depth_limit, turns):
         if (depth_limit == 0) or (node.board.game_ended()):
             return node.get_e(turns)
 
-        # d%2 == 0 -> max -> -inf
-        # d%2 == 1 -> min -> +inf
-        best_val = INIT_BEST_VAL[node.depth % 2]
+        # max -> -inf
+        # min -> +inf
+        best_val = INIT_BEST_VAL[abs(self.max_color - self.my_color)]
         for child in node.children:
             val = self.minmax(child, depth_limit - 1, turns)
             # update best for min max

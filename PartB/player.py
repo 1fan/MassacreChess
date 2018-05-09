@@ -139,7 +139,7 @@ class Player:
         for i in range(len(Possible_Moves)):
             new_board = copy.deepcopy(self.board)
             new_board.move_piece(Possible_Moves[i], self.color)
-            node = Node(0, self.color, new_board, None, None)
+            node = Node(0, self.color, new_board, None, self.color)
             this_e = node.get_e(self.phase_turns)
             if this_e > max_e:
                 max_e = this_e
@@ -151,16 +151,18 @@ class Player:
     # Make decision of placing a piece, call Board.placePiece() function to update the board.
     def best_place(self):
         # EVALUATION
-        Possible_Places = self.POSSIBLE_PLACE[self.color]
-        max_e = -np.inf
-        best_move = 0
-        for i in range(len(Possible_Places)):
-            new_board = copy.deepcopy(self.board)
-            new_board.place_piece(Possible_Places[i], self.color)
-            node = Node(0, self.color, new_board, None, None)
-            this_e = node.get_e(-1)
-            if this_e > max_e:
-                max_e = this_e
-                best_move = i
-        return Possible_Places[best_move]
+        # Possible_Places = self.POSSIBLE_PLACE[self.color]
+        # max_e = -np.inf
+        # best_move = 0
+        # for i in range(len(Possible_Places)):
+        #     new_board = copy.deepcopy(self.board)
+        #     new_board.place_piece(Possible_Places[i], self.color)
+        #     node = Node(0, self.color, new_board, None, self.color)
+        #     this_e = node.get_e(-1)
+        #     if this_e > max_e:
+        #         max_e = this_e
+        #         best_move = i
+        # return Possible_Places[best_move]
 
+        randomPlace = random.randint(0, self.POSSIBLE_PLACE[self.color].__len__())
+        return self.POSSIBLE_PLACE[self.color][randomPlace]

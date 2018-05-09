@@ -9,6 +9,8 @@ import time
 import argparse
 import importlib
 
+PRINT = 1
+
 VERSION_INFO = """Referee version 1.2 (released May 07 2018)
 Plays a basic game of Watch Your Back! between two Player classes
 Allows for resource limiting to simulate performance constraints used in marking
@@ -20,7 +22,8 @@ def main():
 
     # load command-line options for the game and print welcome message
     options = _Options()
-    print(VERSION_INFO)
+    if PRINT:
+        print(VERSION_INFO)
 
     # initialise the game and players
     game  = _Game()
@@ -28,12 +31,14 @@ def main():
         white = _Player(options.white_player,'white',options.time,options.space)
         black = _Player(options.black_player,'black',options.time,options.space)
     except _ResourceLimitException as e:
-        # print(f"resource limit exceeded during initialisation:", e)
+        if PRINT:
+            print(f"resource limit exceeded during initialisation:", e)
         return
 
     # now, play the game!
     player, opponent = white, black # white has first move
-    # print(game)
+    if PRINT:
+        print(game)
 
     while game.playing():
         if options.delay:
@@ -44,31 +49,36 @@ def main():
         except _ResourceLimitException as e:
             # looks like one of the players exceeded their resource limits
             # during calculation of 'action'---that's the end of this game, then
-            # print(f"resource limit exceeded during action():", e)
+            if PRINT:
+                print(f"resource limit exceeded during action():", e)
             return
         
         try:
             game.update(action)
         except _InvalidActionException as e:
             # if one of the players makes an invalid action,
-            # print the error message
-            # print(f"invalid action ({game.loser}):", e)
-            break
+            if PRINT:
+                # print the error message
+                print(f"invalid action ({game.loser}):", e)
+                break
         
-        # print(game)
+        if PRINT:
+            print(game)
         
         try:
             opponent.update(action)
         except _ResourceLimitException as e:
             # looks like one of the players exceeded their resource limits
             # during calculation of 'update'
-            # print(f"resource limit exceeded during update():", e)
+            if PRINT:
+                print(f"resource limit exceeded during update():", e)
             return
         
         # other player's turn!
         player, opponent = opponent, player
 
-    print(f'winner: {game.winner}!')
+    if PRINT:
+        print(f'winner: {game.winner}!')
 
 # --------------------------------------------------------------------------- #
 
@@ -222,7 +232,8 @@ def _space_check(limit):
     try:
         curr_mem_usage, peak_mem_usage = _get_space_usage()
     except:
-        # print("unable to measure memory usage on this platform")
+        if PRINT:
+            print("unable to measure memory usage on this platform")
         return
     
     # adjust measurements to reflect usage of players and referee, not
@@ -230,8 +241,9 @@ def _space_check(limit):
     curr_mem_usage -= _DEFAULT_MEM_USAGE
     peak_mem_usage -= _DEFAULT_MEM_USAGE
 
-    # print(f"space: {curr_mem_usage:.3f}MB (current usage) "
-        # + f"{peak_mem_usage:.3f}MB (max usage) (both players)")
+    if PRINT:
+        print(f"space: {curr_mem_usage:.3f}MB (current usage) "
+         + f"{peak_mem_usage:.3f}MB (max usage) (both players)")
     
     # if we are limited, let's hope we are not out of space!
     # double the limit because space usage is shared
@@ -263,7 +275,8 @@ class _CountdownTimer:
         # accumulate elapsed time since __enter__
         elapsed = time.process_time() - self.start
         self.clock += elapsed
-        # print(f"time: {elapsed:.3f}s (this turn), {self.clock:.3f}s (total)")
+        if PRINT:
+            print(f"time: {elapsed:.3f}s (this turn), {self.clock:.3f}s (total)")
 
         # if we are limited, let's hope we aren't out of time!
         if self.limit and self.clock > self.limit:
@@ -499,6 +512,14 @@ class _Game:
             self.phase = 'completed'
         elif n_whites < 2 and n_blacks < 2:
             self.winner = 'draw'
+            self.phase = 'completed'
+        if self.turns > 200:
+            if n_blacks > n_whites:
+                self.winner = 'B'
+            elif n_whites > n_blacks:
+                self.winner = 'W'
+            else:
+                self.winner = 'draw'
             self.phase = 'completed'
 
     def _invalidate(self, reason):

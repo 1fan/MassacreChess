@@ -117,30 +117,25 @@ class Player:
 
     def writeFile(self):
         self.FeatureValueResult = add2list(self.FeatureValueResult, self.board.get_features(self.color, self.phase_turns))
-        print("-----------------------------------------------", self.FeatureValueResult)
         if self.board.game_ended():
-            print("game ended")
             FinalFeatureResult = [x / self.phase_turns for x in self.FeatureValueResult]
 
             if self.board.game_ended() - 1 == self.color:
-                print(self.color, "win")
 
                 with open('data.txt', 'a') as f:
                     f.write(str(FinalFeatureResult) + "|" + '1')
             elif self.board.game_ended() == 3:
-                print("tie")
                 with open('data.txt', 'a') as f:
                     f.write(str(FinalFeatureResult) + "|" + '0')
             elif self.board.game_ended() - 1 == 1 - self.color:
-                print(self.color, "lose")
                 with open('data.txt', 'a') as f:
                     f.write(str(FinalFeatureResult) + "|" + '-1')
     # Make decision of move a piece
     def best_move(self):
         # MINIMAX
-        depth_limit = 2  # must be even number for this implementation
+        depth_limit = self.get_depth()  # must be even number for this implementation
         this_board = copy.deepcopy(self.board)
-        root = Node(depth_limit, self.color, this_board, None, None)
+        root = Node(depth_limit, self.color, this_board, None, self.color)
         best_val = -np.inf
         best_move = 0
         if root.children is None:
@@ -163,7 +158,7 @@ class Player:
         #     # new_Pieces = self.board.Pieces
         #     new_board = copy.deepcopy(self.board)
         #     new_board.place_piece(Possible_Places[i], self.color)
-        #     node = Node(0, self.color, new_board, None, None)
+        #     node = Node(0, self.color, new_board, None, self.color)
         #     # should have a different feature function
         #     this_e = node.get_e(-1)
         #     if this_e > max_e:
@@ -173,3 +168,8 @@ class Player:
 
         randomPlace = random.randint(0, self.POSSIBLE_PLACE[self.color].__len__())
         return self.POSSIBLE_PLACE[self.color][randomPlace]
+
+    def get_depth(self):
+        if self.board.Range[1] == 6:
+            return 4
+        return 2
