@@ -55,7 +55,7 @@ def main():
             # print(f"invalid action ({game.loser}):", e)
             break
         
-        #print(game)
+        # print(game)
         
         try:
             opponent.update(action)

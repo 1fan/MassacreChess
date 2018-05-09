@@ -29,7 +29,7 @@ with open('data.txt','r') as f:
         T.append(t)
 
 # setting
-N_DATA = 1000
+N_DATA = 3000
 T_DATA = tf.float64
 
 
@@ -41,7 +41,7 @@ Y = T[:N_DATA]
 nF = len(F[0])
 
 # calculate error
-W = tf.Variable(tf.random_normal([nF,1], name='weight', mean=1, stddev=0.0, dtype=T_DATA))
+W = tf.Variable(tf.random_normal([nF,1], name='weight', mean=0.2, stddev=0.0, dtype=T_DATA))
 f = tf.placeholder(T_DATA)
 t = tf.placeholder(T_DATA)
 b = tf.Variable(tf.zeros(1, dtype=T_DATA))
@@ -51,7 +51,7 @@ error = tf.reduce_mean(squared_deltas)
 
 # get training session ready
 init = tf.global_variables_initializer()
-optimizer = tf.train.GradientDescentOptimizer(0.01).minimize(error)
+optimizer = tf.train.GradientDescentOptimizer(0.006).minimize(error)
 cost_history = []
 weight_history = [[] for i in range(nF)]
 
@@ -61,14 +61,16 @@ with tf.Session() as sess:
 
     for i in range(N_DATA):
         sess.run(optimizer, {f: F, t: T})
+        print('error', sess.run(error, {f: F, t: T}))
 
         # Record wight
-        if i % 10 == 0:
+        if i % 20 == 0:
+            print('error', sess.run(error, {f: F, t: T}))
             for j in range(nF):
                 weight_history[j].append(sess.run(W, {f: F, t: T})[j])
         # Display error
-        if i % 500 == 0:
-            print('error', sess.run(error, {f: F, t: T}))
+        if i % 100 == 0:
+            print(i, sess.run(W, {f: F, t: T}))
 
     # Plot weight history
     for i in range(len(weight_history)):

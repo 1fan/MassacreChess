@@ -117,22 +117,17 @@ class Player:
 
     def writeFile(self):
         self.FeatureValueResult = add2list(self.FeatureValueResult, self.board.get_features(self.color, self.phase_turns))
-        print("-----------------------------------------------", self.FeatureValueResult)
         if self.board.game_ended():
-            print("game ended")
             FinalFeatureResult = [x / self.phase_turns for x in self.FeatureValueResult]
 
             if self.board.game_ended() - 1 == self.color:
-                print(self.color, "win")
 
                 with open('data.txt', 'a') as f:
                     f.write(str(FinalFeatureResult) + "|" + '1')
             elif self.board.game_ended() == 3:
-                print("tie")
                 with open('data.txt', 'a') as f:
                     f.write(str(FinalFeatureResult) + "|" + '0')
             elif self.board.game_ended() - 1 == 1 - self.color:
-                print(self.color, "lose")
                 with open('data.txt', 'a') as f:
                     f.write(str(FinalFeatureResult) + "|" + '-1')
         # Make decision of move a piece
@@ -155,6 +150,17 @@ class Player:
 
     # Make decision of placing a piece, call Board.placePiece() function to update the board.
     def best_place(self):
-        randomPlace = random.randint(0, self.POSSIBLE_PLACE[self.color].__len__())
-        return self.POSSIBLE_PLACE[self.color][randomPlace]
+        # EVALUATION
+        Possible_Places = self.POSSIBLE_PLACE[self.color]
+        max_e = -np.inf
+        best_move = 0
+        for i in range(len(Possible_Places)):
+            new_board = copy.deepcopy(self.board)
+            new_board.place_piece(Possible_Places[i], self.color)
+            node = Node(0, self.color, new_board, None, None)
+            this_e = node.get_e(-1)
+            if this_e > max_e:
+                max_e = this_e
+                best_move = i
+        return Possible_Places[best_move]
 
