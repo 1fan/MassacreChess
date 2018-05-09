@@ -126,15 +126,15 @@ class Player:
                 print(self.color, "win")
 
                 with open('data.txt', 'a') as f:
-                    f.write(str(FinalFeatureResult) + "|" + '1')
+                    f.write(str(FinalFeatureResult)  + '1\n')
             elif self.board.game_ended() == 3:
                 print("tie")
                 with open('data.txt', 'a') as f:
-                    f.write(str(FinalFeatureResult) + "|" + '0')
+                    f.write(str(FinalFeatureResult) + '0\n')
             elif self.board.game_ended() - 1 == 1 - self.color:
                 print(self.color, "lose")
                 with open('data.txt', 'a') as f:
-                    f.write(str(FinalFeatureResult) + "|" + '-1')
+                    f.write(str(FinalFeatureResult) + '-1\n')
 
     def best_move(self):
         # RAMDOM

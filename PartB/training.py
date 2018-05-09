@@ -1,4 +1,7 @@
 import tensorflow as tf
+# import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
 from sklearn.preprocessing import scale
@@ -16,6 +19,14 @@ T = [T, T, ...... T]
 # load training data
 T = []
 F = []
+with open('data.txt','r') as f:
+    for line in f.readlines():
+        info = line.strip()
+        feature = info[1:info.index(']')]
+        feature_list = [float(x) for x in feature.split(',')]
+        t = int(info[info.index(']')+1:])
+        F.append(feature_list)
+        T.append(t)
 
 # setting
 N_DATA = 1000
