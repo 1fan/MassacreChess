@@ -117,20 +117,37 @@ class Player:
 
     def writeFile(self):
         self.FeatureValueResult = add2list(self.FeatureValueResult, self.board.get_features(self.color, self.phase_turns))
-        if self.board.game_ended():
+        if self.phase_turns <= 200:
+            winner = self.board.game_ended()
+        else:
+            winner = self.dead_loop()
+        if winner:
             FinalFeatureResult = [x / self.phase_turns for x in self.FeatureValueResult]
 
-            if self.board.game_ended() - 1 == self.color:
+            if winner - 1 == self.color:
 
                 with open('data.txt', 'a') as f:
                     f.write(str(FinalFeatureResult) + "|" + '1')
-            elif self.board.game_ended() == 3:
+            elif winner == 3:
                 with open('data.txt', 'a') as f:
                     f.write(str(FinalFeatureResult) + "|" + '0')
-            elif self.board.game_ended() - 1 == 1 - self.color:
+            elif winner - 1 == 1 - self.color:
                 with open('data.txt', 'a') as f:
                     f.write(str(FinalFeatureResult) + "|" + '-1')
-        # Make decision of move a piece
+
+    def dead_loop(self):
+        n_black = len(self.Pieces[BLACK])
+        n_white = len(self.Pieces[WHITE])
+        if n_black > n_white:
+            return BLACK +1
+        elif n_black < n_white:
+            return WHITE + 1
+        else:
+            return 3
+
+
+
+    # Make decision of move a piece
     def best_move(self):
         # EVALUATION
         Possible_Moves = self.board.possible_moves(self.color)
