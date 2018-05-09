@@ -116,21 +116,29 @@ class Player:
         return my_e - enemy_e
 
     def writeFile(self):
-        self.FeatureValueResult = add2list(self.FeatureValueResult, self.board.get_features(self.color, self.phase_turns))
-        if self.board.game_ended():
-            FinalFeatureResult = [x / self.phase_turns for x in self.FeatureValueResult]
+        self.my_FeatureValueResult = add2list(self.my_FeatureValueResult, self.board.get_features(self.color, self.phase_turns))
+        self.op_FeatureValueResult = add2list(self.op_FeatureValueResult,self.board.get_features(1-self.color, self.phase_turns-1))
+        if self.phase_turns > 200:
+            winner = self.dead_loop()
+        else:
+            winner = self.board.game_ended()
+        if winner:
+            my_FinalFeatureResult = [x / self.phase_turns for x in self.my_FeatureValueResult]
+            op_FinalFeatureResult = [x / self.phase_turns for x in self.op_FeatureValueResult]
 
-            if self.board.game_ended() - 1 == self.color:
+            if winner - 1 == self.color:
 
                 with open('data.txt', 'a') as f:
-                    f.write(str(FinalFeatureResult)  + '1\n')
-            elif self.board.game_ended() == 3:
-                print("tie")
+                    f.write(str(my_FinalFeatureResult) + "|" + '1')
+                    f.write(str(op_FinalFeatureResult) + "|" + '-1')
+            elif winner == 3:
                 with open('data.txt', 'a') as f:
-                    f.write(str(FinalFeatureResult) + '0\n')
-            elif self.board.game_ended() - 1 == 1 - self.color:
+                    f.write(str(my_FinalFeatureResult) + "|" + '0')
+                    f.write(str(op_FinalFeatureResult) + "|" + '0')
+            elif winner - 1 == 1 - self.color:
                 with open('data.txt', 'a') as f:
-                    f.write(str(FinalFeatureResult) + '-1\n')
+                    f.write(str(my_FinalFeatureResult) + "|" + '-1')
+                    f.write(str(op_FinalFeatureResult) + "|" + '1')
 
     def best_move(self):
         # RAMDOM

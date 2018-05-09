@@ -23,15 +23,17 @@ class Player:
         self.board = Board()
         self.new_board = Board()
         self.initLegalPlace()
-        self.FeatureValueResult = []
+        self.my_FeatureValueResult = []
+        self.op_FeatureValueResult = []
         self.initFeature()
 
 
     def initFeature(self):
         if COLLECT_MOVING:
-            self.FeatureValueResult = [0, 0, 0, 0, 0]
+            self.my_FeatureValueResult = [0, 0, 0, 0, 0]
+            self.op_FeatureValueResult = [0, 0, 0, 0, 0]
         else:
-            self.FeatureValueResult = [0, 0, 0]
+            self.my_FeatureValueResult = [0, 0, 0]
 
     def initLegalPlace(self):
         for c in range(0,8):
@@ -116,28 +118,33 @@ class Player:
         return my_e - enemy_e
 
     def writeFile(self):
-        self.FeatureValueResult = add2list(self.FeatureValueResult, self.board.get_features(self.color, self.phase_turns))
-        if self.phase_turns <= 200:
-            winner = self.board.game_ended()
-        else:
+        self.my_FeatureValueResult = add2list(self.my_FeatureValueResult, self.board.get_features(self.color, self.phase_turns))
+        self.op_FeatureValueResult = add2list(self.op_FeatureValueResult,self.board.get_features(1-self.color, self.phase_turns-1))
+        if self.phase_turns > 200:
             winner = self.dead_loop()
+        else:
+            winner = self.board.game_ended()
         if winner:
-            FinalFeatureResult = [x / self.phase_turns for x in self.FeatureValueResult]
+            my_FinalFeatureResult = [x / self.phase_turns for x in self.my_FeatureValueResult]
+            op_FinalFeatureResult = [x / self.phase_turns for x in self.op_FeatureValueResult]
 
             if winner - 1 == self.color:
 
                 with open('data.txt', 'a') as f:
-                    f.write(str(FinalFeatureResult) + "|" + '1')
+                    f.write(str(my_FinalFeatureResult) + "|" + '1')
+                    f.write(str(op_FinalFeatureResult) + "|" + '-1')
             elif winner == 3:
                 with open('data.txt', 'a') as f:
-                    f.write(str(FinalFeatureResult) + "|" + '0')
+                    f.write(str(my_FinalFeatureResult) + "|" + '0')
+                    f.write(str(op_FinalFeatureResult) + "|" + '0')
             elif winner - 1 == 1 - self.color:
                 with open('data.txt', 'a') as f:
-                    f.write(str(FinalFeatureResult) + "|" + '-1')
+                    f.write(str(my_FinalFeatureResult) + "|" + '-1')
+                    f.write(str(op_FinalFeatureResult) + "|" + '1')
 
     def dead_loop(self):
-        n_black = len(self.Pieces[BLACK])
-        n_white = len(self.Pieces[WHITE])
+        n_black = len(self.board.Pieces[BLACK])
+        n_white = len(self.board.Pieces[WHITE])
         if n_black > n_white:
             return BLACK +1
         elif n_black < n_white:
