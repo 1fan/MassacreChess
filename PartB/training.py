@@ -51,25 +51,24 @@ error = tf.reduce_mean(squared_deltas)
 
 # get training session ready
 init = tf.global_variables_initializer()
-optimizer = tf.train.GradientDescentOptimizer(0.006).minimize(error)
+optimizer = tf.train.GradientDescentOptimizer(0.007).minimize(error)
 cost_history = []
 weight_history = [[] for i in range(nF)]
 
 with tf.Session() as sess:
     sess.run(init)
-    print('error', sess.run(error, {f: F, t: T}))
 
     for i in range(N_DATA):
         sess.run(optimizer, {f: F, t: T})
-        print(i,'error', sess.run(error, {f: F, t: T}))
+
 
         # Record wight
         if i % 100 == 0:
             for j in range(nF):
                 weight_history[j].append(sess.run(W, {f: F, t: T})[j])
-        # Display error
-        if i % 200 == 0:
-            print(i, sess.run(W, {f: F, t: T}))
+            print("---------------",i,"---------------")
+            print('error:', sess.run(error, {f: F, t: T}))
+            print(sess.run(W, {f: F, t: T}))
 
     # Plot weight history
     for i in range(len(weight_history)):
