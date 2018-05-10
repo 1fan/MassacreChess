@@ -29,7 +29,7 @@ with open('data.txt','r') as f:
         T.append(t)
 
 # setting
-N_DATA = 3000
+N_DATA = 6000
 T_DATA = tf.float64
 
 
@@ -57,19 +57,18 @@ weight_history = [[] for i in range(nF)]
 
 with tf.Session() as sess:
     sess.run(init)
-    print('init w', sess.run(W, {f: F, t: T}))
+    print('error', sess.run(error, {f: F, t: T}))
 
     for i in range(N_DATA):
         sess.run(optimizer, {f: F, t: T})
-        print('error', sess.run(error, {f: F, t: T}))
+        print(i,'error', sess.run(error, {f: F, t: T}))
 
         # Record wight
-        if i % 20 == 0:
-            print('error', sess.run(error, {f: F, t: T}))
+        if i % 100 == 0:
             for j in range(nF):
                 weight_history[j].append(sess.run(W, {f: F, t: T})[j])
         # Display error
-        if i % 100 == 0:
+        if i % 200 == 0:
             print(i, sess.run(W, {f: F, t: T}))
 
     # Plot weight history
