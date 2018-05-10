@@ -44,6 +44,13 @@ def mul2list(list1, list2):
         result.append(list1[i] * list2[i])
     return result
 
+
+def sub2list(list1, list2):
+    result = []
+    for i in range(len(list1)):
+        result.append(list1[i] - list2[i])
+    return result
+
 # Status of a given position
 def get_status(board, location):
     x, y = location

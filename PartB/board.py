@@ -216,7 +216,7 @@ class Board:
         if n_black < 2 and n_white < 2:
             return 3
         if n_black < 2:
-            return 1
-        if n_white < 2:
             return 2
+        if n_white < 2:
+            return 1
         return 0

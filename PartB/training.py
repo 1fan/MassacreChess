@@ -5,6 +5,7 @@ matplotlib.use('agg')
 import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
 from sklearn.preprocessing import scale
+from judge import sub2list
 
 '''
 Format of input datafile
@@ -19,17 +20,24 @@ T = [T, T, ...... T]
 # load training data
 T = []
 F = []
-with open('data.txt','r') as f:
+with open('data_all.txt','r') as f:
+    i = 0
+    temp_list1 =[]
+    temp_list2 = []
     for line in f.readlines():
         info = line.strip()
         feature = info[1:info.index(']')]
-        feature_list = [float(x) for x in feature.split(',')]
-        t = int(info[info.index(']')+1:])
-        F.append(feature_list)
-        T.append(t)
+        if i % 2 == 0:
+            temp_list1 = [float(x) for x in feature.split(',')]
+        else:
+            temp_list2 = [float(x) for x in feature.split(',')]
+            F.append(sub2list(temp_list1,temp_list2))
+            t = int(info[info.index(']') + 1:])
+            T.append(t)
+        i += 1
 
 # setting
-N_DATA = 6000
+N_DATA = 6252
 T_DATA = tf.float64
 
 
@@ -41,7 +49,7 @@ Y = T[:N_DATA]
 nF = len(F[0])
 
 # calculate error
-W = tf.Variable(tf.random_normal([nF,1], name='weight', mean=0.2, stddev=0.0, dtype=T_DATA))
+W = tf.Variable(tf.random_normal([nF,1], name='weight', mean=0.5, stddev=0.0, dtype=T_DATA))
 f = tf.placeholder(T_DATA)
 t = tf.placeholder(T_DATA)
 b = tf.Variable(tf.zeros(1, dtype=T_DATA))
@@ -51,7 +59,7 @@ error = tf.reduce_mean(squared_deltas)
 
 # get training session ready
 init = tf.global_variables_initializer()
-optimizer = tf.train.GradientDescentOptimizer(0.007).minimize(error)
+optimizer = tf.train.GradientDescentOptimizer(0.08).minimize(error)
 cost_history = []
 weight_history = [[] for i in range(nF)]
 
