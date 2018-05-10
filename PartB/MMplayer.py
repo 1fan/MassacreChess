@@ -23,15 +23,17 @@ class Player:
         self.board = Board()
         self.new_board = Board()
         self.initLegalPlace()
-        self.FeatureValueResult = []
+        self.my_FeatureValueResult = []
+        self.op_FeatureValueResult = []
         self.initFeature()
 
 
     def initFeature(self):
         if COLLECT_MOVING:
-            self.FeatureValueResult = [0, 0, 0, 0, 0]
+            self.my_FeatureValueResult = [0, 0, 0, 0, 0]
+            self.op_FeatureValueResult = [0, 0, 0, 0, 0]
         else:
-            self.FeatureValueResult = [0, 0, 0]
+            self.my_FeatureValueResult = [0, 0, 0]
 
     def initLegalPlace(self):
         for c in range(0,8):
@@ -129,16 +131,26 @@ class Player:
             if winner - 1 == self.color:
 
                 with open('data.txt', 'a') as f:
-                    f.write(str(my_FinalFeatureResult) + "|" + '1')
-                    f.write(str(op_FinalFeatureResult) + "|" + '-1')
+                    f.write(str(my_FinalFeatureResult) + '1\n')
+                    f.write(str(op_FinalFeatureResult) + '-1\n')
             elif winner == 3:
                 with open('data.txt', 'a') as f:
-                    f.write(str(my_FinalFeatureResult) + "|" + '0')
-                    f.write(str(op_FinalFeatureResult) + "|" + '0')
+                    f.write(str(my_FinalFeatureResult) + '0\n')
+                    f.write(str(op_FinalFeatureResult) + '0\n')
             elif winner - 1 == 1 - self.color:
                 with open('data.txt', 'a') as f:
-                    f.write(str(my_FinalFeatureResult) + "|" + '-1')
-                    f.write(str(op_FinalFeatureResult) + "|" + '1')
+                    f.write(str(my_FinalFeatureResult) + '-1\n')
+                    f.write(str(op_FinalFeatureResult) + '1\n')
+
+    def dead_loop(self):
+        n_black = len(self.board.Pieces[BLACK])
+        n_white = len(self.board.Pieces[WHITE])
+        if n_black > n_white:
+            return BLACK +1
+        elif n_black < n_white:
+            return WHITE + 1
+        else:
+            return 3
 
     # Make decision of move a piece
     def best_move(self):

@@ -131,16 +131,16 @@ class Player:
             if winner - 1 == self.color:
 
                 with open('data.txt', 'a') as f:
-                    f.write(str(my_FinalFeatureResult) + "|" + '1')
-                    f.write(str(op_FinalFeatureResult) + "|" + '-1')
+                    f.write(str(my_FinalFeatureResult) + '1\n')
+                    f.write(str(op_FinalFeatureResult) + '-1\n')
             elif winner == 3:
                 with open('data.txt', 'a') as f:
-                    f.write(str(my_FinalFeatureResult) + "|" + '0')
-                    f.write(str(op_FinalFeatureResult) + "|" + '0')
+                    f.write(str(my_FinalFeatureResult) + '0\n')
+                    f.write(str(op_FinalFeatureResult) + '0\n')
             elif winner - 1 == 1 - self.color:
                 with open('data.txt', 'a') as f:
-                    f.write(str(my_FinalFeatureResult) + "|" + '-1')
-                    f.write(str(op_FinalFeatureResult) + "|" + '1')
+                    f.write(str(my_FinalFeatureResult) + '-1\n')
+                    f.write(str(op_FinalFeatureResult) + '1\n')
 
     def dead_loop(self):
         n_black = len(self.board.Pieces[BLACK])
