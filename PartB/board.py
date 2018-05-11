@@ -47,37 +47,35 @@ class Board:
                 edges = self.Corner[1]
                 if x in edges or y in edges:
                     n_edge += 1
-
+        # placing phase
         if phase_turns == -1:
             return [n_alive, -n_danger, n_safe]
+        # moving phase
         else:
             f_edge = get_f_edge(n_edge, phase_turns)
             f_moves = len(self.possible_moves(color))
             return [n_alive, -n_danger, -f_edge, f_moves, n_safe]
 
-    # Make a move. move: ((x0,y0),(x1,y1))
-    # Consider to change into list.indexof method
     def move_piece(self, action, color):
-        # 1: update the moved piece in the list.
+        # update the moved piece in the list.
         for piece in self.Pieces[color]:
             if piece.location == action[0]:
                 piece.location = action[1]
+        # eliminate any pieces if possible
         self.start_fight(action[1], color)
         return self
-        # Record features
 
-    # Insert the piece into the list accordingly
     def place_piece(self, action, color):
         piece = Piece(action, color)
         self.Pieces[color].append(piece)
         self.start_fight(action, color)
-        # Record features
 
     def start_fight(self, my_location, my_color):
         # check if kills others
         directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
         friend = my_color
         enemy = 1 - my_color
+        # check if it kills others
         for direction in directions:
             neighbor_location = add(my_location, direction)
             neighbor_status = get_status(self, neighbor_location)
@@ -87,7 +85,7 @@ class Board:
                 opposite_status = get_status(self, opposite_location)
                 if opposite_status == friend or opposite_status == CORNER:
                     self.eliminate(neighbor_location, enemy)
-            # check if is killed
+        # check if it is killed
         for direction in directions:
             neighbor_location = add(my_location, direction)
             neighbor_status = get_status(self, neighbor_location)
@@ -99,8 +97,7 @@ class Board:
                     self.eliminate(my_location, my_color)
                     break
 
-    # Eliminate a piece
-    # Consider using list.indexof() and list.remove(index)
+    # Eliminate a piece from the board
     def eliminate(self, location, color):
         for piece in self.Pieces[color]:
             if piece.location == location:
@@ -130,15 +127,16 @@ class Board:
                 pieces.append(piece.location)
             print(color, pieces)
 
-    # turns=128, 192
     def shrink_board(self, turns):
         self.eliminate_edge_piece()
+        # update board info
         self.Range = add(self.Range, (1, -1))
         if turns == 128:
             self.Corner = [(1, 1), (1, 6), (6, 6), (6, 1)]
         elif turns == 192:
             self.Corner = [(2, 2), (2, 5), (5, 5), (5, 2)]
 
+        # corner elimination
         # add corner and eliminate its neighbor if possible
         removed_pieces = [[],[]]
         # check each corner from the top left anticlockwise
@@ -163,7 +161,7 @@ class Board:
                 for location in removed_pieces[color]:
                     self.eliminate(location, color)
 
-
+    # Return the 2 directions of a corner which points toward the board
     def get_dd(self, location):
         dd = []
         c, r = location
@@ -176,19 +174,6 @@ class Board:
         else:
             dd.append((0, -1))
         return dd
-    # # Judge whether it is valid to place a piece. piece is an instance of Piece class.
-    # def judgeValidPlace(self, piece):
-    #     pass
-    #
-    # # Judge whether it is valid to move a piece. move: ((x0,y0),(x1,y1))
-    # def judgeValidMove(self, move):
-    #     pass
-
-
-    # Return a list of all possible placement action ()
-    # the place should be in its zone
-    def possible_places(self, color):
-        pass
 
     # Return a list of all possible move action [((),()), ]
     def possible_moves(self, color):
@@ -210,13 +195,17 @@ class Board:
                         possible_moves.append((piece.location, opposite_location))
         return possible_moves
 
+    # Return the winner if the game end
     def game_ended(self):
         n_black = len(self.Pieces[BLACK])
         n_white = len(self.Pieces[WHITE])
+        # tie
         if n_black < 2 and n_white < 2:
             return 3
+        # white wins
         if n_black < 2:
-            return 2
+            return WHITE + 1
+        # black wins
         if n_white < 2:
-            return 1
+            return BLACK + 1
         return 0
