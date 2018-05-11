@@ -1,29 +1,13 @@
 # Helper
-import numpy as np
 
 EMPTY, BLACK, WHITE, CORNER, OUTSIDE = -1, 0, 1, 2, 3
-INIT_BEST_VAL = [-np.inf, +np.inf]
 
-
-
-
-def get_zone(param, param1):
-    pass
-
-
-ZONE = [get_zone(2, 7), get_zone(0, 5)]
-
-def get_zone(x, y):
-    zone = []
-    for c in range(8):
-        for r in range(x, y+1):
-            zone.append((c, r))
-    return zone
 
 def add(tup1, tup2):
     x1, y1 = tup1
     x2, y2 = tup2
     return (x1+x2, y1+y2)
+
 
 def add2list(list1, list2):
     result = []
@@ -50,6 +34,7 @@ def sub2list(list1, list2):
     for i in range(len(list1)):
         result.append(list1[i] - list2[i])
     return result
+
 
 # Status of a given position
 def get_status(board, location):

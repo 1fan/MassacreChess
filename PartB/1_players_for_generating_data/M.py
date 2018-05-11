@@ -1,6 +1,6 @@
 from numpy import random
 from board import Board
-from judge import *
+from helpers import *
 import operator
 from node import Node
 import copy
@@ -152,17 +152,46 @@ class Player:
         else:
             return 3
 
+    # Make decision of move a piece
     def best_move(self):
-        # RAMDOM
-        Possible_Moves = self.board.possible_moves(self.color)
-        if Possible_Moves is None:
+        # MINIMAX
+        depth_limit = self.get_depth()  # must be even number for this implementation
+        this_board = copy.deepcopy(self.board)
+        root = Node(depth_limit, self.color, this_board, None, self.color)
+        best_val = -np.inf
+        best_move = 0
+        if root.children is None:
             return None
-        else:
-            randomMove = random.randint(0, Possible_Moves.__len__())
-            return Possible_Moves[randomMove]
+        for child in root.children:
+            val = child.minmax(depth_limit - 1, self.phase_turns + 1)
+            # update best value and move for min max
+            if val > best_val:
+                best_val = val
+                best_move = child
+        return best_move.action
 
     # Make decision of placing a piece, call Board.placePiece() function to update the board.
     def best_place(self):
-        randomPlace = random.randint(0,self.POSSIBLE_PLACE[self.color].__len__())
+        #EVALUATION
+        # Possible_Places = self.POSSIBLE_PLACE[self.color]
+        # max_e = -np.inf
+        # best_place = 0
+        # for i in range(len(Possible_Places)):
+        #     # new_Pieces = self.board.Pieces
+        #     new_board = copy.deepcopy(self.board)
+        #     new_board.place_piece(Possible_Places[i], self.color)
+        #     node = Node(0, self.color, new_board, None, self.color)
+        #     # should have a different feature function
+        #     this_e = node.get_e(-1)
+        #     if this_e > max_e:
+        #         max_e = this_e
+        #         best_place = i
+        # return Possible_Places[best_place]
+
+        randomPlace = random.randint(0, self.POSSIBLE_PLACE[self.color].__len__())
         return self.POSSIBLE_PLACE[self.color][randomPlace]
-    #   return place. (,).
+
+    def get_depth(self):
+        if self.board.Range[1] == 6:
+            return 4
+        return 2

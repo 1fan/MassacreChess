@@ -1,6 +1,6 @@
 from numpy import random
 from board import Board
-from judge import *
+from helpers import *
 import operator
 from node import Node
 import copy
@@ -152,41 +152,17 @@ class Player:
         else:
             return 3
 
-
-
-    # Make decision of move a piece
     def best_move(self):
-        # EVALUATION
+        # RAMDOM
         Possible_Moves = self.board.possible_moves(self.color)
-        max_e = -np.inf
-        best_move = 0
-        for i in range(len(Possible_Moves)):
-            new_board = copy.deepcopy(self.board)
-            new_board.move_piece(Possible_Moves[i], self.color)
-            node = Node(0, self.color, new_board, None, self.color)
-            this_e = node.get_e(self.phase_turns)
-            if this_e > max_e:
-                max_e = this_e
-                best_move = i
-        return Possible_Moves[best_move]
-
-
+        if Possible_Moves is None:
+            return None
+        else:
+            randomMove = random.randint(0, Possible_Moves.__len__())
+            return Possible_Moves[randomMove]
 
     # Make decision of placing a piece, call Board.placePiece() function to update the board.
     def best_place(self):
-        # EVALUATION
-        # Possible_Places = self.POSSIBLE_PLACE[self.color]
-        # max_e = -np.inf
-        # best_move = 0
-        # for i in range(len(Possible_Places)):
-        #     new_board = copy.deepcopy(self.board)
-        #     new_board.place_piece(Possible_Places[i], self.color)
-        #     node = Node(0, self.color, new_board, None, self.color)
-        #     this_e = node.get_e(-1)
-        #     if this_e > max_e:
-        #         max_e = this_e
-        #         best_move = i
-        # return Possible_Places[best_move]
-
-        randomPlace = random.randint(0, self.POSSIBLE_PLACE[self.color].__len__())
+        randomPlace = random.randint(0,self.POSSIBLE_PLACE[self.color].__len__())
         return self.POSSIBLE_PLACE[self.color][randomPlace]
+    #   return place. (,).

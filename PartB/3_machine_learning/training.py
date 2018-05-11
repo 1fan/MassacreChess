@@ -5,7 +5,7 @@ matplotlib.use('agg')
 import matplotlib.pyplot as plt
 from sklearn.utils import shuffle
 from sklearn.preprocessing import scale
-from judge import sub2list
+from helpers import sub2list
 
 '''
 Format of input datafile

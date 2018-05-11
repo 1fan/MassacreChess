@@ -1,5 +1,9 @@
-from judge import *
+from helpers import mul2list
 from copy import deepcopy
+
+INIT_BEST_VAL = [-1000, 1000]
+MAX, MIN = 0, 1
+
 
 class Node(object):
     def __init__(self, depth, my_color, board, action, max_color):
@@ -27,17 +31,19 @@ class Node(object):
                                               move,
                                               self.max_color))
 
-    def minmax(self, node, depth_limit, turns):
-        if (depth_limit == 0) or (node.board.game_ended()):
-            return node.get_e(turns)
+    def minmax(self, depth_limit, turns):
+        if (depth_limit == 0) or (self.board.game_ended()):
+            return self.get_e(turns)
 
         # max -> -inf
         # min -> +inf
-        best_val = INIT_BEST_VAL[abs(self.max_color - self.my_color)]
-        for child in node.children:
-            val = self.minmax(child, depth_limit - 1, turns)
+        m = abs(self.max_color - self.my_color)
+        best_val = INIT_BEST_VAL[m]
+
+        for child in self.children:
+            val = child.minmax(depth_limit - 1, turns + 1)
             # update best for min max
-            if ((node.depth % 2 == 0) and (val > best_val)) or ((node.depth % 2 == 1) and (val < best_val)):
+            if (m == MAX and (val > best_val)) or (m == MIN and (val < best_val)):
                 best_val = val
         return best_val
 
@@ -46,9 +52,9 @@ class Node(object):
         my_e = 0
         enemy_e = 0
         if turns == -1:
-            weights = [1, 2.054550176, 0.764629671257953]
+            weights = [1, 0.419951280104073,  -0.613176001482239]
         else:
-            weights = [1, 2.054550176, 3.07200047454279, 0.0576914904025349, 0.764629671257953]
+            weights = [1, 0.419951280104073, 0.826045902106665, -0.246892542362536, -0.613176001482239]
         for wf in mul2list(weights, self.board.get_features(self.my_color, turns)):
             my_e += wf
         for wf in mul2list(weights, self.board.get_features(1 - self.my_color, turns)):
