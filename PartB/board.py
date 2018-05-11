@@ -1,7 +1,6 @@
-from referee import _InvalidActionException
+
 from piece import Piece
 from helpers import *
-from copy import deepcopy
 
 class Board:
     '''
