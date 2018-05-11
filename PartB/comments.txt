@@ -1,9 +1,64 @@
-features
-agents(random, evaluation, minimax)
-machine learning:
-	training data (order, choice of utility)
-	learning (scale shuffle)
-	adjust weight
-Improvements:
-	placing
-	size of board - depth of tree
+1.Strategies and algorithms
+	a. Placing phase
+	The strategy of placing a piece is using an evaluation function to predict the next best place among a set of possible moves, the weight of the evaluation function is adjusted by Machine Learning based on over 6k fighting history data. We used three features in deciding which location to place a piece:
+	* n_alive: The number of live pieces in one color.
+	* n_safe: The number of pieces that could not be killed if it doesn’t move.
+	* n_dangerous: The number of pieces that could be killed in one step.
+              
+	b. Moving phase
+	The strategy of moving a piece is using minimax algorithms to predict the best possible move. The number of steps looking ahead depends on the size of the board. To be safe and not exceed the time limit, the depth is set at 2 and 3 before and after the first shrinking.  the weight of the evaluation function is adjusted by Machine Learning based on over 6k fighting history data. We used five features in deciding which location to place a piece, three of them are same as those of placing phase and the two extra features are:
+	* n_moves: number of moves that could be made
+	* f_edges: number of pieces at the edge times its tendency to be killed while board shrinking, where tendency = 0 after the second shrinking
+	=  [turns since last shrink/turns between last shrink and next shrink]^2 otherwise
+
+
+2. Implementation
+	* training.py
+	Training data was loaded, preprocessed and used as input for machine learning.
+	It reads a text file with features and true utility in each line and stores those information into two lists, T(true utility) and F (features).  Then the two lists were to be shuffled and scaled by scikit learn. Finally the preprocessed data was used for training. Gradient descent optimizer in tensorflow was used to minimise the error. Weights were printed and recorded and was used for our final version of player class.
+	* node.py
+	Node is used for minimax algorithms to decide a best move.
+	* helpers.py
+	The helper file contains several functions to be called in other classes, including the arithmetic for tuples/lists.
+	* player.py
+	Be called by referee, contains the functions of maintain the board, make decision and updates, etc.
+	* piece.py
+	Monitor information of a piece, including color and location.
+	* board.py
+	Maintain board related information, including all pieces’ location, calculating the features, update the board, etc.
+	      
+3. Creativity
+	a. Features (how and why the features are chosen)
+	Each piece has its properties, every alive piece(n_alive) can be safe or dangerous. Safe pieces wouldn’t be killed no matter how smart the opponent is(n_safe). Dangerous pieces would be killed in one step if the opponent if smart(n_dangerous). The safe pieces are usually along the edges and would not be safe any more when a board shrink is close. Therefore number of pieces and edges and the distance to next shrink should be taken into account(f_edge). Finally when all features above are in tie, we prefer to have more possible moves to choose from (n_moves). 
+	
+	b.Generating training data
+		i.Data
+	    One fight generates one set of data from the two players. Each set of data includes the difference of the average feature value of the two players for the entire game and the result (1 for win, 0 for tie and -1 for lose). In order to provide valuable data, the game was ended after 200 turns and the winner goes to the one with more pieces on board. Details are explained below:
+			1.Features (average)
+			Credit assignment for this game is hard due to its length and complexity. Taking average of the feature value of all moves gives an idea of the overall performance during the whole game and it must be related to the final result. In this way, credit assignment will not need to be concerned.
+			2. Utility (0,1,-1 & infinite loop)
+			Usually the game would end after a few turns after the second board shrink. However, when both of the two players are smart enough to prevent themselves from being eliminated, the game might come to an infinite loop where neither of players could ever kill the other and end the game. In this case, the game will never stop and it will make the data trival. 
+			Therefore, the game is forced to be stopped after 200 turns and the winner will the player with more pieces on board. This adjustment is reasonable since the game situation is usually settled after the second shrinking and the winner is usually the player with more pieces.
+
+		ii.Players at different levels
+    	The fights are between different players with different strategies in both placing phase and moving phace. There are 5 players in total: R_r, E_r, E_d, M_r, M_d. The first letter explains its strategy in  moving phase and the second in placing phase.
+			1.Placing phase (r & d)
+			r is placing a piece randomly following the rules. Often the pieces are wide spread over the board.
+			d places a piece so that its safe and will never be eliminated in the placing phase and won’t be eliminated by the opponent if it doesn't move in the moving phase.
+			2. Moving(R & E & M)
+			R is moving a piece randomly following the rules. Often the move is not reasonable.
+			E is to move the piece which gives the highest evaluation value. Often the move is practical but could be shortsighted sometimes.
+			M decides its next move using minimax algorithm. 
+	
+		iii. Knowledge to be learnt from each different fight
+	    Advanced knowledge is defined as the knowledge which improves my performance quickly and sharply and basic knowledge improves my performance slowly. They are both significant to be learnt and forms the whole spectrum of knowledge together.
+		The general idea is that when players at different levels fight (R vs E, R vs M, E vs M), the advanced knowledge can be learnt whereas only basic knowledge can be learnt from fights between players at similar level(R vs R, E vs E, M vs M).
+		Our strategy is to  play defensively during the placing phase, however we still need to know how to move our pieces during the moving phase with an opponent who is not placing defensively. Therefore the fight between r and d is needed in this case.
+
+	c. Learning from data
+		i. Preprocessing (Shuffle &  Scale)
+		The data need to be shuffled to give the best outcome after learning. Scaling is necessary since not all  units of the features are the same and it makes the learning faster.  
+	    ii. Learning (Gradient Descent & plot of weight)
+		Gradient descent optimizer of tensorflow is used. The learning step is welled adjusted until the error is not increasing and falls to a low value quickly. The weight is recorded during the learning process and plot on a graph to make sure our input data is enough to give a stabilized and reliable set of weights.  
+
+
