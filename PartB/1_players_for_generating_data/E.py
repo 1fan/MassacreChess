@@ -2,12 +2,10 @@ from numpy import random
 import numpy as np
 from board import Board
 from helpers import *
-import operator
 from node import Node
 import copy
 
-from referee import _InvalidActionException
-
+# These two value is used in checking collect data for moving or placing.
 COLLECT_MOVING = 1
 COLLECT_PLACING = 0
 
@@ -28,7 +26,7 @@ class Player:
         self.op_FeatureValueResult = []
         self.initFeature()
 
-
+    # Init value for features.
     def initFeature(self):
         if COLLECT_MOVING:
             self.my_FeatureValueResult = [0, 0, 0, 0, 0]
@@ -36,6 +34,7 @@ class Player:
         else:
             self.my_FeatureValueResult = [0, 0, 0]
 
+    # Init all legal possible places for duel sides.
     def initLegalPlace(self):
         for c in range(0,8):
             for r in range(2,8):
@@ -79,7 +78,7 @@ class Player:
 
     def update(self, action):
         # adjust opponent's piece
-        # if action is a nested tuple --> it is a 'move'; else --> it is a 'place'
+        # if action is a nested tuple-->it is a 'move'; else-->it is a 'place'
         if action:
             enemy_color = 1 - self.color
             self.update_turns()
@@ -91,13 +90,14 @@ class Player:
                 self.board.place_piece(action, enemy_color)
                 self.remove_from_possible_place(action)
 
+    # Update phase from placing to moving.
     def update_turns(self):
         self.phase_turns += 1
         if self.phase == "placing" and self.phase_turns == 24:
             self.phase = "moving"
             self.phase_turns = 0
 
-
+    # Remove a specific place from possible placing list.
     def remove_from_possible_place(self, location):
         c ,r = location
         if r in range(2, 8):
@@ -105,32 +105,34 @@ class Player:
         if r in range(0, 6):
             self.POSSIBLE_PLACE[WHITE].remove(location)
 
-    # Make decision of move a piece
-
-
-        # Evaluation
+    # Calculate the evaluation value
     def calculate_e(self):
         my_e = 0
         enemy_e = 0
-        for wf in mul2list(self.board.weights, self.board.get_features(self.color, self.phase_turns)):
+        for wf in mul2list(self.board.weights, 
+            self.board.get_features(self.color, self.phase_turns)):
             my_e += wf
-        for wf in mul2list(self.board.weights, self.board.get_features(1 - self.color, self.phase_turns)):
+        for wf in mul2list(self.board.weights, 
+            self.board.get_features(1 - self.color, self.phase_turns)):
             enemy_e += wf
         return my_e - enemy_e
 
+    # Write the feature value and fight result in a file for ML.
     def writeFile(self):
-        self.my_FeatureValueResult = add2list(self.my_FeatureValueResult, self.board.get_features(self.color, self.phase_turns))
-        self.op_FeatureValueResult = add2list(self.op_FeatureValueResult,self.board.get_features(1-self.color, self.phase_turns-1))
+        self.my_FeatureValueResult = add2list(self.my_FeatureValueResult, 
+            self.board.get_features(self.color, self.phase_turns))
+        self.op_FeatureValueResult = add2list(self.op_FeatureValueResult,
+            self.board.get_features(1-self.color, self.phase_turns-1))
         if self.phase_turns > 200:
             winner = self.dead_loop()
         else:
             winner = self.board.game_ended()
         if winner:
-            my_FinalFeatureResult = [x / self.phase_turns for x in self.my_FeatureValueResult]
-            op_FinalFeatureResult = [x / self.phase_turns for x in self.op_FeatureValueResult]
-
+            my_FinalFeatureResult = 
+            [x / self.phase_turns for x in self.my_FeatureValueResult]
+            op_FinalFeatureResult = 
+            [x / self.phase_turns for x in self.op_FeatureValueResult]
             if winner - 1 == self.color:
-
                 with open('data.txt', 'a') as f:
                     f.write(str(my_FinalFeatureResult) + '1\n')
                     f.write(str(op_FinalFeatureResult) + '-1\n')
@@ -143,6 +145,7 @@ class Player:
                     f.write(str(my_FinalFeatureResult) + '-1\n')
                     f.write(str(op_FinalFeatureResult) + '1\n')
 
+    # If dead loop occurs, judge which side win.
     def dead_loop(self):
         n_black = len(self.board.Pieces[BLACK])
         n_white = len(self.board.Pieces[WHITE])
@@ -152,8 +155,6 @@ class Player:
             return WHITE + 1
         else:
             return 3
-
-
 
     # Make decision of move a piece
     def best_move(self):
@@ -171,9 +172,8 @@ class Player:
                 best_move = i
         return Possible_Moves[best_move]
 
-
-
-    # Make decision of placing a piece, call Board.placePiece() function to update the board.
+    # Make decision of placing a piece, 
+    # call Board.placePiece() function to update the board.
     def best_place(self):
         # EVALUATION
         # Possible_Places = self.POSSIBLE_PLACE[self.color]
@@ -189,5 +189,6 @@ class Player:
         #         best_move = i
         # return Possible_Places[best_move]
 
-        randomPlace = random.randint(0, self.POSSIBLE_PLACE[self.color].__len__())
+        randomPlace = random.randint(0, 
+            self.POSSIBLE_PLACE[self.color].__len__())
         return self.POSSIBLE_PLACE[self.color][randomPlace]

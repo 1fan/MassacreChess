@@ -45,18 +45,14 @@ class Player:
             # shrink the board before my move
             if self.phase_turns in [128, 192]:
                 self.board.shrink_board(self.phase_turns)
-
             # Give a best move
             Best_Move = self.best_move()
-
             # Make the move on my board
             self.board.move_piece(Best_Move, self.color)
             self.phase_turns += 1
-
             # shrink the board after my move
             if self.phase_turns in [128, 192]:
                 self.board.shrink_board(self.phase_turns)
-
             return Best_Move
 
     def update(self, action):
@@ -71,13 +67,14 @@ class Player:
                 self.board.place_piece(action, enemy_color)
                 self.remove_from_possible_place(action)
 
+    # Update the phase from placing to moving.
     def update_turns(self):
         self.phase_turns += 1
         if self.phase == "placing" and self.phase_turns == 24:
             self.phase = "moving"
             self.phase_turns = 0
 
-
+    # Remove a specific place from possible placing list
     def remove_from_possible_place(self, location):
         c ,r = location
         if r in range(2, 8):
@@ -106,7 +103,8 @@ class Player:
                 best_move = i
         return root.children[best_move].action
 
-    # Make decision of placing a piece, call Board.placePiece() function to update the board.
+    # Make decision of placing a piece, call Board.placePiece() function to 
+    # update the board.
     # evaluation function is used to decide whether the place is good or not
     def best_place(self):
         Possible_Places = self.POSSIBLE_PLACE[self.color]

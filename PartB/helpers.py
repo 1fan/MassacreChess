@@ -1,25 +1,23 @@
-# Helper
+# The functions in helper.py is called in other classes.
 
 EMPTY, BLACK, WHITE, CORNER, OUTSIDE = -1, 0, 1, 2, 3
 
-
+# Return the result of add two tuples.
 def add(tup1, tup2):
     x1, y1 = tup1
     x2, y2 = tup2
     return (x1+x2, y1+y2)
 
-
+# Return the value of add two lists.
 def add2list(list1, list2):
     result = []
     for i in range(len(list1)):
         result.append(list1[i] + list2[i])
     return result
 
-
 def mul(tup, factor):
     x, y = tup
     return (factor * x, factor * y)
-
 
 # multiple two tuples
 def mul2list(list1, list2):
@@ -28,15 +26,14 @@ def mul2list(list1, list2):
         result.append(list1[i] * list2[i])
     return result
 
-
+# subscribe two lists
 def sub2list(list1, list2):
     result = []
     for i in range(len(list1)):
         result.append(list1[i] - list2[i])
     return result
 
-
-# Status of a given position
+# Return the status of a given position
 def get_status(board, location):
     x, y = location
     minr, maxr = board.Range
@@ -53,7 +50,8 @@ def get_status(board, location):
     return EMPTY
 
 
-# check if given player can move a piece to this location from directions other than the given one
+# check if given player can move a piece to this location 
+# from directions other than the given one
 def can_move_to(board, color, location, d):
     directions = [(0, -1), (0, 1), (-1, 0), (1, 0)]
     directions.remove(d)

@@ -40,7 +40,6 @@ with open('data_all.txt','r') as f:
 N_DATA = 6252
 T_DATA = tf.float64
 
-
 # get the training data ready
 F, T = shuffle(F, T)
 X = scale(F[:N_DATA])
@@ -49,7 +48,8 @@ Y = T[:N_DATA]
 nF = len(F[0])
 
 # calculate error
-W = tf.Variable(tf.random_normal([nF,1], name='weight', mean=0.5, stddev=0.0, dtype=T_DATA))
+W = tf.Variable(tf.random_normal([nF,1], name='weight', mean=0.5, 
+    stddev=0.0, dtype=T_DATA))
 f = tf.placeholder(T_DATA)
 t = tf.placeholder(T_DATA)
 b = tf.Variable(tf.zeros(1, dtype=T_DATA))
@@ -68,8 +68,6 @@ with tf.Session() as sess:
 
     for i in range(N_DATA):
         sess.run(optimizer, {f: F, t: T})
-
-
         # Record wight
         if i % 100 == 0:
             for j in range(nF):

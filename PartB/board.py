@@ -1,4 +1,3 @@
-
 from piece import Piece
 from helpers import *
 
@@ -11,7 +10,7 @@ class Board:
         black = []
         white = []
         self.Pieces = [black, white]  # [black, white] list of Piece
-        self.Range = (0, 8) # location should be in this range to be inside the board
+        self.Range = (0, 8) # location should be in this range to be in board
         self.Corner = [(0,0),(0,7),(7,7),(7,0)]
 
     # Return a tuple of all features' value
@@ -26,7 +25,8 @@ class Board:
             # Feature5: number of pieces that could not be killed.
             if is_safe(self, color, piece.location):
                 n_safe += 1
-            # Feature2: The number of pieces that could be killed in 1 move. Return the number.
+            # Feature2: The number of pieces that could be killed in 1 move. 
+            # Return the number.
             else:
                 for d in directions:
                     neighbor_location = add(piece.location, d)
@@ -34,11 +34,13 @@ class Board:
                     # Neighbor is empty
                     if neighbor_status == enemy or neighbor_status == CORNER:
                         other_neighbor_location = add(piece.location, mul(d, -1))
-                        other_neighbor_status = get_status(self, other_neighbor_location)
+                        other_neighbor_status = get_status(
+                            self, other_neighbor_location)
                         # have empty spot
                         if other_neighbor_status == EMPTY:
                             # PLACING or MOVING
-                            if phase_turns == -1 or can_move_to(self, enemy, other_neighbor_location, d):
+                            if phase_turns == -1 or can_move_to(self, enemy, 
+                                other_neighbor_location, d):
                                 n_danger += 1
             # Feature3: The number of pieces that locate at edges.(MOVING only)
             if phase_turns != -1:
@@ -46,15 +48,17 @@ class Board:
                 edges = self.Corner[1]
                 if x in edges or y in edges:
                     n_edge += 1
-        # placing phase
+        # placing phase, using 3 features.
         if phase_turns == -1:
             return [n_alive, -n_danger, n_safe]
-        # moving phase
+        # moving phase, using 5 features.
         else:
             f_edge = get_f_edge(n_edge, phase_turns)
+            # Feature4: The numbers that could move. (MOVING only)
             f_moves = len(self.possible_moves(color))
             return [n_alive, -n_danger, -f_edge, f_moves, n_safe]
 
+    # Update the board with one movement of piece.
     def move_piece(self, action, color):
         # update the moved piece in the list.
         for piece in self.Pieces[color]:
@@ -64,6 +68,7 @@ class Board:
         self.start_fight(action[1], color)
         return self
 
+    # Update the board with one placement of piece.
     def place_piece(self, action, color):
         piece = Piece(action, color)
         self.Pieces[color].append(piece)
@@ -92,7 +97,7 @@ class Board:
             if neighbor_status == enemy:
                 other_neighbor_location = add(my_location, mul(direction, -1))
                 other_neighbor_status = get_status(self, other_neighbor_location)
-                if other_neighbor_status == enemy or other_neighbor_status == CORNER:
+                if other_neighbor_status==enemy or other_neighbor_status==CORNER:
                     self.eliminate(my_location, my_color)
                     break
 
@@ -126,6 +131,7 @@ class Board:
                 pieces.append(piece.location)
             print(color, pieces)
 
+    # Shrink the board when turns in [128,192]
     def shrink_board(self, turns):
         self.eliminate_edge_piece()
         # update board info
@@ -153,7 +159,8 @@ class Board:
                 opposite_location = add(neighbor_location, d)
                 opposite_status = get_status(self, opposite_location)
                 # The two adjacent location have pieces with opposite color
-                if neighbor_status + opposite_status == 1:  # status can only be EMPTY(-1) BLACK(0) WHITE(1)
+                # status can only be EMPTY(-1) BLACK(0) WHITE(1)
+                if neighbor_status + opposite_status == 1:  
                     removed_pieces[neighbor_status].append(neighbor_location)
         for color in [0, 1]:
             if removed_pieces[color]:
